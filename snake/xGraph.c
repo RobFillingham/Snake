@@ -75,12 +75,12 @@ char _setup(char* s){
 }
 
 void _draw(){
-        XClearWindow(disp, ventana);
+        //XClearWindow(disp, ventana);
         _drawString();
         XFillRectangles (disp, ventana, XDefaultGC (disp, DefaultScreen(disp)),
 		    recArray, size);
 	    XFlush (disp);
-        sleep(4);
+        //sleep(4);
 }
 
 void _drawString(){

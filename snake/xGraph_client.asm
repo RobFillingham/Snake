@@ -29,4 +29,13 @@ section .text
 
         call _draw
 
+        push dword 100 ;Ancho
+        push dword 100 ;Altura
+        push dword 300 ;Posicion en x
+        push dword 300 ;Posicion en y
+        push dword 2 ;Indice
+        call _createRectangle
+
+        call _draw
+
         ret
