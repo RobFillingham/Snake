@@ -9,8 +9,9 @@ section .text
     main:
         
         call _setup
-        call print_wall ;Pinta un rectangulo
         call print_snake ;Pintar la serpiente 
+        call far print_wall ;Pinta un rectangulo
+        
 
 
     ext1:
@@ -60,8 +61,8 @@ section .text
         ret
 
     print_snake:
-        call _setup
-        
+       
+
         push dword 17 ;Ancho
         push dword 17 ;Altura
         push dword 300 ;Posicion en y
