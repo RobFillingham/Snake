@@ -80,7 +80,7 @@ void _draw(){
         XFillRectangles (disp, ventana, XDefaultGC (disp, DefaultScreen(disp)),
 		    recArray, size);
 	    XFlush (disp);
-        //sleep(4);
+        //sleep(10);
 }
 
 void _drawString(){
