@@ -10,7 +10,7 @@ section .text
         
         call _setup
         call print_snake ;Pintar la serpiente 
-        call far print_wall ;Pinta un rectangulo
+        call print_wall ;Pinta un rectangulo
         
 
 
@@ -27,7 +27,9 @@ section .text
         push dword 0 ;Posicion en x
         push dword 1 ;Indice
         call _createRectangle
-
+        
+        add esp, 20
+        
         call _draw
 
         push dword 500 ;Ancho
@@ -36,6 +38,8 @@ section .text
         push dword 0 ;Posicion en x
         push dword 2 ;Indice
         call _createRectangle
+
+        add esp, 20
 
         call _draw
 
@@ -46,6 +50,8 @@ section .text
         push dword 3 ;Indice
         call _createRectangle
 
+        add esp, 20
+
         call _draw
 
         push dword 25 ;Ancho
@@ -55,7 +61,10 @@ section .text
         push dword 4 ;Indice
         call _createRectangle
 
+        ;add esp, 20
+
         call _draw
+
 
         
         ret
@@ -70,6 +79,8 @@ section .text
         push dword 1 ;Indice
         call _createRectangle
 
+        add esp, 20
+
         call _draw
 
         push dword 10 ;Ancho
@@ -78,6 +89,8 @@ section .text
         push dword 350 ;Posicion en x
         push dword 1 ;Indice
         call _createRectangle
+
+        add esp, 20
 
         call _draw
 
