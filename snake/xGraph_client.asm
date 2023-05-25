@@ -3,6 +3,8 @@ EXTERN _createRectangle
 EXTERN _draw
 GLOBAL main
 
+;nasm -f elf32 xGraph_client.asm -g -F dwarf gcc -m32 xGraph.c -lX11 xGraph_client.o -o xGraph -no-pie ./xGraph
+
 section .data
 
 section .text
@@ -10,8 +12,8 @@ section .text
         
         call _setup
         call print_snake ;Pintar la serpiente 
+        call print_food ;Pintar la comida
         call print_wall ;Pinta un rectangulo
-        
 
 
     ext1:
@@ -83,9 +85,58 @@ section .text
 
         call _draw
 
+        push dword 17 ;Ancho
+        push dword 17 ;Altura
+        push dword 300 ;Posicion en y
+        push dword 317 ;Posicion en x
+        push dword 1 ;Indice
+        call _createRectangle
+
+        add esp, 20
+
+        call _draw
+
+
+        ret
+
+    print_food:
+
         push dword 10 ;Ancho
         push dword 10 ;Altura
-        push dword 350 ;Posicion en y
+        push dword 245 ;Posicion en y
+        push dword 120 ;Posicion en x
+        push dword 1 ;Indice
+        call _createRectangle
+
+        add esp, 20
+
+        call _draw
+
+        push dword 10 ;Ancho
+        push dword 10 ;Altura
+        push dword 70 ;Posicion en y
+        push dword 450 ;Posicion en x
+        push dword 1 ;Indice
+        call _createRectangle
+
+        add esp, 20
+
+        call _draw
+
+        push dword 10 ;Ancho
+        push dword 10 ;Altura
+        push dword 434 ;Posicion en y
+        push dword 50 ;Posicion en x
+        push dword 1 ;Indice
+        call _createRectangle
+
+        add esp, 20
+
+        call _draw
+
+        push dword 10 ;Ancho
+        push dword 10 ;Altura
+        push dword 245 ;Posicion en y
         push dword 350 ;Posicion en x
         push dword 1 ;Indice
         call _createRectangle
@@ -94,5 +145,28 @@ section .text
 
         call _draw
 
+        push dword 10 ;Ancho
+        push dword 10 ;Altura
+        push dword 30 ;Posicion en y
+        push dword 27 ;Posicion en x
+        push dword 1 ;Indice
+        call _createRectangle
+
+        add esp, 20
+
+        call _draw
+
+        push dword 10 ;Ancho
+        push dword 10 ;Altura
+        push dword 434 ;Posicion en y
+        push dword 434 ;Posicion en x
+        push dword 1 ;Indice
+        call _createRectangle
+
+        add esp, 20
+
+        call _draw
+
+        
 
         ret
