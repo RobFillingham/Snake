@@ -3,11 +3,14 @@
 #include <stdio.h>
 
 #define SNK_SIZE 10
+#define FOOD_SIZE 7
 
 char _setup();
 void _draw();
 void _drawString();
+void _sleep(int var);
 void _createRectangle(int index, short int x, short int y, short int height, short int width);
+void _createRectangleColor(int index, short int x, short int y, short int height, short int width, int colorNum);
 
 Display* disp;
 
@@ -17,7 +20,7 @@ XRectangle recArray[SNK_SIZE];
 
 char stringDraw[] = {'H','o','l','a',' ','M','u','n','d','o','!'};
 char setUpSuccess = 0;
-char size = 1;
+char size = 1, size2=1;
 
 /*int main (){
     setup();
@@ -80,7 +83,7 @@ void _draw(){
         XFillRectangles (disp, ventana, XDefaultGC (disp, DefaultScreen(disp)),
 		    recArray, size);
 	    XFlush (disp);
-        sleep(1);
+        //sleep(1);
 }
 
 void _drawString(){
@@ -97,4 +100,57 @@ void _createRectangle(int index, short int x, short int y, short int height, sho
     recArray[0].height = height;
     recArray[0].width = width;
     size++;
+}
+
+void _createRectangleColor(int index, short int x, short int y, short int height, short int width, int colorNum) {
+    recArray[index].x = x;
+    recArray[index].y = y;
+    recArray[index].height = height;
+    recArray[index].width = width;
+    
+    size++;
+
+    switch(colorNum){
+        case 1: {  //Se utiliza XParseColor para convertir el nombre de color "red" en una estructura XColor y luego XAllocColor para asignar un píxel a esa estructura. 
+            XParseColor(disp, DefaultColormap(disp, DefaultScreen(disp)), "red", &color);
+            XAllocColor(disp, DefaultColormap(disp, DefaultScreen(disp)), &color);
+            XSetForeground(disp, XDefaultGC(disp, DefaultScreen(disp)), color.pixel);
+            break;
+        }
+        case 2:{
+            XParseColor(disp, DefaultColormap(disp, DefaultScreen(disp)), "blue", &color);
+            XAllocColor(disp, DefaultColormap(disp, DefaultScreen(disp)), &color);
+            XSetForeground(disp, XDefaultGC(disp, DefaultScreen(disp)), color.pixel);
+            break;
+        }
+        case 3:{
+            XParseColor(disp, DefaultColormap(disp, DefaultScreen(disp)), "green", &color);
+            XAllocColor(disp, DefaultColormap(disp, DefaultScreen(disp)), &color);
+            XSetForeground(disp, XDefaultGC(disp, DefaultScreen(disp)), color.pixel);
+            break;
+        }
+        case 4:{
+            XParseColor(disp, DefaultColormap(disp, DefaultScreen(disp)), "black", &color);
+            XAllocColor(disp, DefaultColormap(disp, DefaultScreen(disp)), &color);
+            XSetForeground(disp, XDefaultGC(disp, DefaultScreen(disp)), color.pixel);
+            break;
+        }
+        case 5:{
+            XParseColor(disp, DefaultColormap(disp, DefaultScreen(disp)), "white", &color);
+            XAllocColor(disp, DefaultColormap(disp, DefaultScreen(disp)), &color);
+            XSetForeground(disp, XDefaultGC(disp, DefaultScreen(disp)), color.pixel);
+            break;
+        }
+    }
+    
+}
+
+// Limpiar pantalla
+void _clearScreen() {
+    XClearWindow(disp, ventana);
+    XFlush(disp);
+}
+
+void _sleep(int var){
+    sleep(var);
 }
