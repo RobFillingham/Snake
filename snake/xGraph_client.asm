@@ -12,8 +12,13 @@ GLOBAL main
 ;./xGraph
 
 section .data
-    vec_x dw 300,317,0,0,0,0,0
-    vec_y dw 300,300,0,0,0,0,0
+    snake_head db 2             ;Posicion de la cabeza (Segunda posiscion en el vector)
+    vec_x dw 300,317,0,0,0,0,0  ;Posicion de snake en x
+    vec_y dw 300,300,0,0,0,0,0  ;Poiscion de snake en y
+    direccion db 1              ; 0 - Arriba
+                                ; 1 - Derecha
+                                ; 2 - Abajo
+                                ; 3 - Izquierda
 
 
 section .text
