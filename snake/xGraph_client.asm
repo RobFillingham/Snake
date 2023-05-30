@@ -7,9 +7,19 @@ EXTERN _clearScreen
 EXTERN _clearScreenColor
 GLOBAL main
 
-;nasm -f elf32 xGraph_client.asm -g -F dwarf gcc -m32 xGraph.c -lX11 xGraph_client.o -o xGraph -no-pie ./xGraph
+;nasm -f elf32 xGraph_client.asm -g -F dwarf 
+;gcc -m32 xGraph.c -lX11 xGraph_client.o -o xGraph -no-pie 
+;./xGraph
 
 section .data
+    snake_head db 2             ;Posicion de la cabeza (Segunda posiscion en el vector)
+    vec_x dw 300,317,0,0,0,0,0  ;Posicion de snake en x
+    vec_y dw 300,300,0,0,0,0,0  ;Poiscion de snake en y
+    direccion db 1              ; 0 - Arriba
+                                ; 1 - Derecha
+                                ; 2 - Abajo
+                                ; 3 - Izquierda
+
 
 section .text
     main:
@@ -32,6 +42,11 @@ section .text
         call _sleep
         add esp, 4
 
+        ; Ciclo principal ****
+
+
+
+        ; ********************
         
         
 
@@ -170,8 +185,8 @@ section .text
         push dword 2 ;Color verde
         push dword 17 ;Ancho
         push dword 17 ;Altura
-        push dword 300 ;Posicion en y
-        push dword 300 ;Posicion en x
+        push dword vec_y[0] ;Posicion en y
+        push dword vec_x[0] ;Posicion en x
         push dword 0 ;Indice
         call _createRectangleColor
 
@@ -182,8 +197,8 @@ section .text
         push dword 2 ;Color verde
         push dword 17 ;Ancho
         push dword 17 ;Altura
-        push dword 300 ;Posicion en y
-        push dword 317 ;Posicion en x
+        push dword vec_y[2] ;Posicion en y
+        push dword vec_x[2] ;Posicion en x
         push dword 1 ;Indice
         call _createRectangleColor
 
