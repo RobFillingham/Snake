@@ -20,6 +20,8 @@ section .data
                                 ; 1 - Derecha
                                 ; 2 - Abajo
                                 ; 3 - Izquierda
+;hola
+    
 
 
 section .text
