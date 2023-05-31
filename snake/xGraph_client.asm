@@ -24,7 +24,7 @@ section .data
                                 ; 2 - Abajo
                                 ; 3 - Izquierda
     temp dd 0
-    food_index db 0 ;Aumentar cada que se coma
+    food_index dd 0 ;Aumentar cada que se coma
     vecFood_x dw 120,450,50 ,350,27 ,434 ;Posicion de comida en x
     vecFood_y dw 245,70 ,434,245,30 ,434 ;Posicion de comida en y
 
@@ -48,7 +48,7 @@ section .text
         call print_snake ;Pintar la serpiente 
 
         ; Para ver lo suficiente
-        push dword 4
+        push dword 1
         call _sleep
         add esp, 4
 
@@ -56,6 +56,37 @@ section .text
 
 
         call moverDerecha
+        push dword 1
+        call _sleep
+        add esp, 4
+        call moverDerecha
+        push dword 1
+        call _sleep
+        add esp, 4
+        call moverDerecha
+        push dword 1
+        call _sleep
+        add esp, 4
+        call moverDerecha
+        push dword 1
+        call _sleep
+        add esp, 4
+        call moverDerecha
+        push dword 1
+        call _sleep
+        add esp, 4
+        call moverDerecha
+        push dword 1
+        call _sleep
+        add esp, 4
+        call moverDerecha
+        push dword 1
+        call _sleep
+        add esp, 4
+        call moverDerecha
+        push dword 1
+        call _sleep
+        add esp, 4
 
         ; ********
         
@@ -517,6 +548,8 @@ section .text
         mov eax, [temp]
         mov [snake_head], eax
         
+        ;call check_block
+
         ret
 
 
@@ -527,21 +560,21 @@ section .text
             ;Comparar que se alimente
             ;Tam de la comida: 10x10 px
         food:
-            mov eax, food_index     ;Indice indica numero de comida en pantalla
-            mov ebx, vecFood_x[eax] ;Valor de la comida en x
+            mov eax, [food_index]     ;Indice indica numero de comida en pantalla
+            mov ebx, [vecFood_x+eax] ;Valor de la comida en x
 
-            mov eax, food_index     ;Indice indica numero de comida en pantalla
-            mov ecx, vecFood_y[eax] ;Valor de la comida en y
+            mov eax, [food_index]     ;Indice indica numero de comida en pantalla
+            mov ecx, [vecFood_y+eax] ;Valor de la comida en y
 
-            mov eax, snake_head     ;Indice de cabeza
-            mov edx, vec_x[eax]     ;Valor de la cabeza en x
+            mov eax, [snake_head]    ;Indice de cabeza
+            mov edx, [vec_x+eax]     ;Valor de la cabeza en x
 
-            mov eax, snake_head     ;Indice de cabeza
-            mov eax, vec_y[eax]     ;Valor de la cabeza en y
+            mov eax, [snake_head]     ;Indice de cabeza
+            mov eax, [vec_y+eax]     ;Valor de la cabeza en y
 
                 ;Evalua esquina superior izquierda
             call four_sides
-
+    
                 ;Evalua esquina superior derecha
             add ebx, 10
             call four_sides
@@ -554,6 +587,7 @@ section .text
                 ;Evalua esquina inferior derecha
             add ebx, 10
             call four_sides
+            
             jmp wall
 
             four_sides:
@@ -577,8 +611,8 @@ section .text
             
             ;Comparar que choque con muros(4 esquinas posibles de la cabeza)
         wall:
-            mov eax, snake_head ;Indice de cabeza
-            mov edx, vec_x[eax] ;Valor de la cabeza en x
+            mov eax, [snake_head] ;Indice de cabeza
+            mov edx, [vec_x+eax] ;Valor de la cabeza en x
 
             cmp edx, 25         ;Comparamos con el valor de una pared(Lateral izquierda) en x
             jle death           ;Saltamos si es igual o menor al valor de x en la pared
@@ -587,8 +621,8 @@ section .text
             cmp edx, 475        ;Comparamos con el valor de una pared(Lateral derecha) en x
             jge death           ;Saltamos si es igual o mayor al valor de x en la pared
 
-            mov eax, snake_head ;Indice de cabeza
-            mov edx, vec_y[eax] ;Valor de la cabeza en y
+            mov eax, [snake_head] ;Indice de cabeza
+            mov edx, [vec_y+eax] ;Valor de la cabeza en y
 
             cmp edx, 25         ;Comparamos con el valor de una pared(Arriba) en y
             jle death           ;Saltamos si es igual o mayor al valor de y en la pared
@@ -603,17 +637,18 @@ section .text
             mov ecx, snake_size ;for loop
             dec ecx ; Revisar, posible error de segmento con snake_size
 
-            mov eax, snake_head ;Indice de cabeza
-            mov edx, vec_x[eax] ;Valor de la cabeza en x
+            mov eax, [snake_head] ;Indice de cabeza
+            mov edx, [vec_x+eax] ;Valor de la cabeza en x
 
             xor eax,eax
             mov eax,0 ;Contador auxiliar para recorrer vec de snake
-            cross_body:
+            
+        cross_body:
                 ;Solo evaluar 1 esquina
                 cmp eax, snake_head  ;Provar corchetes
                 je continue
 
-                mov ebx, vecFood_x[eax] ;Valor de la comida en x
+                mov ebx, [vecFood_x+eax] ;Valor de la comida en x
 
                 cmp ebx, edx
                 je death
@@ -622,9 +657,10 @@ section .text
                 add eax, 2 ;Incrementa index
                 dec ecx
                 loop cross_body
+            
          llamadaPrincipal: ; Al terminar loop
             ;devolver a donde se llama las verificaciones
-
+            ret
         death:
             ;Murió
             jmp ext1
