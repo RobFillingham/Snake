@@ -522,12 +522,17 @@ section .text
         push dword 17 ;Ancho
         push dword 17 ;Altura
         mov esi, [snake_head]
-        push dword [vec_y+esi] ; posicion en y     
+        mov eax, [vec_y+esi] ; eax = vec_y[snake_head]
+        mov esi, [snake_tail]
+        mov [vec_y+esi], eax
+        push eax; posicion en y   
         ;determinar x_future
         mov esi, [snake_head]
         mov eax, 0
         mov eax, [vec_x + esi]
         add eax, 17
+        mov esi, [snake_tail]
+        mov [vec_x+esi], eax ;actualizar x de la tail
         push dword eax ;Posicion en x
         push dword [snake_tail]; index
         call _createRectangleColor
@@ -542,8 +547,19 @@ section .text
         mov eax, [snake_tail] ;temp = snake_tail
         mov [temp], eax
         
-        add eax, 2
-        mov [snake_tail], eax ;snake_tail += 2
+        mov eax, [snake_size]
+        mov ebx, 2
+        mul ebx ; eax = snake_size*2
+        mov ebx, [snake_tail]
+        add ebx, 2; ebx = snake_tail+2
+
+        cmp ebx, eax
+        jae cero
+        mov [snake_tail], ebx
+        cero:               ;Actuaalizar tail
+            mov eax, 0
+            mov [snake_tail], eax
+        
         
         mov eax, [temp]
         mov [snake_head], eax
