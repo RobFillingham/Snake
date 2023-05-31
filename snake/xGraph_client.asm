@@ -18,7 +18,7 @@ section .data
     snake_tail dd 0
     vec_x dw 300,317,0,0,0,0,0  ;Posicion de snake en x
     vec_y dw 300,300,0,0,0,0,0  ;Poiscion de snake en y
-    snake_size db 2             ;Longitud snake
+    snake_size db 7             ;Longitud snake
     direccion db 1              ; 0 - Arriba
                                 ; 1 - Derecha
                                 ; 2 - Abajo
@@ -39,7 +39,7 @@ section .text
         call _clearScreen
 
         ; Segundos antes de dibujar cuadro
-        push dword 1
+        push dword 999999
         call _sleep
         add esp, 4
         
@@ -48,7 +48,7 @@ section .text
         call print_snake ;Pintar la serpiente 
 
         ; Para ver lo suficiente
-        push dword 1
+        push dword 999999
         call _sleep
         add esp, 4
 
@@ -56,39 +56,62 @@ section .text
 
 
         call moverDerecha
-        push dword 1
+        push dword 999999
         call _sleep
         add esp, 4
         call moverDerecha
-        push dword 1
+        push dword 999999
         call _sleep
         add esp, 4
         call moverDerecha
-        push dword 1
+        push dword 999999
         call _sleep
         add esp, 4
         call moverDerecha
-        push dword 1
+        push dword 999999
         call _sleep
         add esp, 4
         call moverDerecha
-        push dword 1
+        push dword 999999
         call _sleep
         add esp, 4
         call moverDerecha
-        push dword 1
+        push dword 999999
         call _sleep
         add esp, 4
         call moverDerecha
-        push dword 1
+        push dword 999999
         call _sleep
         add esp, 4
         call moverDerecha
-        push dword 1
+        push dword 999999
         call _sleep
         add esp, 4
 
-        ; ********
+        call moverDerecha
+        push dword 999999
+        call _sleep
+        add esp, 4
+        call moverDerecha
+        push dword 999999
+        call _sleep
+        add esp, 4
+        call moverDerecha
+        push dword 999999
+        call _sleep
+        add esp, 4
+        call moverDerecha
+        push dword 999999
+        call _sleep
+        add esp, 4
+        call moverDerecha
+        push dword 999999
+        call _sleep
+        add esp, 4
+
+        
+
+        ; ****
         
         
 
@@ -310,9 +333,14 @@ section .text
         call _createRectangleColor
         add esp, 24
         call _draw
-        push dword 3
+        push dword 999999
         call _sleep
         add esp, 4
+
+        push dword 999999
+        call _sleep
+        add esp, 4
+
         ret
 
 
@@ -366,7 +394,7 @@ section .text
 
         call _draw
 
-        push dword 2
+        push dword 999999
         call _sleep
         add esp, 4
         
@@ -413,7 +441,7 @@ section .text
 
         call _draw
 
-        push dword 1
+        push dword 999999
         call _sleep
         add esp, 4
 
@@ -429,7 +457,7 @@ section .text
 
         call _draw
 
-        push dword 1
+        push dword 999999
         call _sleep
         add esp, 4
 
@@ -445,7 +473,7 @@ section .text
 
         call _draw
 
-        push dword 1
+        push dword 999999
         call _sleep
         add esp, 4
 
@@ -461,7 +489,7 @@ section .text
 
         call _draw
 
-        push dword 1
+        push dword 999999
         call _sleep
         add esp, 4
 
@@ -477,7 +505,7 @@ section .text
 
         call _draw
 
-        push dword 1
+        push dword 999999
         call _sleep
         add esp, 4
 
@@ -493,7 +521,7 @@ section .text
 
         call _draw
 
-        push dword 1
+        push dword 999999
         call _sleep
         add esp, 4
         
@@ -505,9 +533,9 @@ section .text
     moverDerecha:
 
         ;borrar tail
-    
+
         call _paintBlack ; pone el color en negro
-    dos:
+
         push dword 17 ;Ancho
         push dword 17 ;Altura
         mov esi, [snake_tail]
@@ -515,7 +543,7 @@ section .text
         push dword [vec_x+esi] ;Posicion en x
         call _drawBlack
         add esp, 16
-    uno:
+  
         ;mover tail
 
         push dword 2;Color azul
@@ -538,11 +566,11 @@ section .text
         call _createRectangleColor
         add esp, 24
         call _draw
-    
+
         push 1
         call _sleep
         add esp, 4
-    tres:
+
         ;Actualizar tail y head 
         mov eax, [snake_tail] ;temp = snake_tail
         mov [temp], eax
@@ -564,7 +592,7 @@ section .text
         mov eax, [temp]
         mov [snake_head], eax
         
-        ;call check_block
+        call check_block
 
         ret
 
@@ -650,7 +678,7 @@ section .text
 
             ;Comparar que choque consigo mismo
             
-            mov ecx, snake_size ;for loop
+            mov ecx, [snake_size] ;for loop
             dec ecx ; Revisar, posible error de segmento con snake_size
 
             mov eax, [snake_head] ;Indice de cabeza
@@ -679,6 +707,64 @@ section .text
             ret
         death:
             ;Murió
+            ;Mensaje de muerte
+            call _clearScreen
+            push dword 1 ;Color Rojo
+            push dword 500 ;Ancho
+            push dword 500 ;Altura
+            push dword 0 ;Posicion en y
+            push dword 0 ;Posicion en x
+            push dword 0 ;Indice
+            call _createRectangleColor
+            add esp, 24
+            call _draw
+
+            push dword 99999
+            call _sleep
+            add esp, 4
+
+            push dword 4 ;Color 
+            push dword 500 ;Ancho
+            push dword 500 ;Altura
+            push dword 0 ;Posicion en y
+            push dword 0 ;Posicion en x
+            push dword 0 ;Indice
+            call _createRectangleColor
+            add esp, 24
+            call _draw
+
+            push dword 99999
+            call _sleep
+            add esp, 4
+
+            push dword 1 ;Color blanco
+            push dword 500 ;Ancho
+            push dword 500 ;Altura
+            push dword 0 ;Posicion en y
+            push dword 0 ;Posicion en x
+            push dword 0 ;Indice
+            call _createRectangleColor
+            add esp, 24
+            call _draw
+
+            push dword 99999
+            call _sleep
+            add esp, 4
+
+            push dword 4 ;Color
+            push dword 500 ;Ancho
+            push dword 500 ;Altura
+            push dword 0 ;Posicion en y
+            push dword 0 ;Posicion en x
+            push dword 0 ;Indice
+            call _createRectangleColor
+            add esp, 24
+            call _draw
+
+            push dword 99999
+            call _sleep
+            add esp, 4
+
             jmp ext1
 
         eaten:
