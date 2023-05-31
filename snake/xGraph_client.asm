@@ -5,6 +5,8 @@ EXTERN _draw
 EXTERN _sleep
 EXTERN _clearScreen
 EXTERN _clearScreenColor
+EXTERN _paintBlack
+EXTERN _drawBlack
 GLOBAL main
 
 ;nasm -f elf32 xGraph_client.asm -g -F dwarf 
@@ -12,7 +14,8 @@ GLOBAL main
 ;./xGraph
 
 section .data
-    snake_head db 2             ;Posicion de la cabeza (Segunda posiscion en el vector)
+    snake_head dd 2             ;Posicion de la cabeza (Segunda posiscion en el vector)
+    snake_tail dd 0
     vec_x dw 300,317,0,0,0,0,0  ;Posicion de snake en x
     vec_y dw 300,300,0,0,0,0,0  ;Poiscion de snake en y
     snake_size db 7             ;Longitud snake
@@ -20,6 +23,8 @@ section .data
                                 ; 1 - Derecha
                                 ; 2 - Abajo
                                 ; 3 - Izquierda
+    temp dd 0
+
 ;hola
     
 
@@ -48,6 +53,7 @@ section .text
         ; Ciclo principal ****
 
 
+        call moverDerecha
 
         ; ********************
         
@@ -310,3 +316,54 @@ section .text
         
 
         ret
+
+;MOVIMIENTO DE LA SERPIENTE
+
+    moverDerecha:
+
+        ;borrar tail
+
+        call _paintBlack ; pone el color en negro
+
+        push dword 17 ;Ancho
+        push dword 17 ;Altura
+        mov esi, [snake_tail]
+        push dword [vec_y+esi] ;Posicion en y
+        push dword [vec_x+esi] ;Posicion en x
+        call _drawBlack
+        add esp, 16
+  
+        ;mover tail
+
+        push dword 2;Color azul
+        push dword 17 ;Ancho
+        push dword 17 ;Altura
+        mov esi, [snake_head]
+        push dword [vec_y+esi] ; posicion en y     
+        ;determinar x_future
+        mov esi, [snake_head]
+        mov eax, 0
+        mov eax, [vec_x + esi]
+        add eax, 17
+        push dword eax ;Posicion en x
+        push dword [snake_tail]; index
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+
+        push 1
+        call _sleep
+        add esp, 4
+
+        ;Actualizar tail y head 
+        mov eax, [snake_tail] ;temp = snake_tail
+        mov [temp], eax
+        
+        add eax, 2
+        mov [snake_tail], eax ;snake_tail += 2
+        
+        mov eax, [temp]
+        mov [snake_head], eax
+        
+        ret
+

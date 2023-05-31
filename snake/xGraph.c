@@ -11,12 +11,15 @@ void _drawString();
 void _sleep(int var);
 void _createRectangle(int index, short int x, short int y, short int height, short int width);
 void _createRectangleColor(int index, short int x, short int y, short int height, short int width, int colorNum);
+void _paintBlack();
+void _drawBlack(int, int, int, int);
 
 Display* disp;
 
 Window ventana;
 XColor color;
 XRectangle recArray[SNK_SIZE];
+
 
 char stringDraw[] = {'H','o','l','a',' ','M','u','n','d','o','!'};
 char setUpSuccess = 0;
@@ -86,6 +89,7 @@ void _draw(){
         //sleep(1);
 }
 
+
 void _drawString(){
     if (setUpSuccess){
         XDrawImageString (disp, ventana, XDefaultGC (disp, DefaultScreen(disp)), 
@@ -143,6 +147,22 @@ void _createRectangleColor(int index, short int x, short int y, short int height
         }
     }
     
+}
+
+void _paintBlack(){
+    XParseColor(disp, DefaultColormap(disp, DefaultScreen(disp)), "black", &color);
+    XAllocColor(disp, DefaultColormap(disp, DefaultScreen(disp)), &color);
+    XSetForeground(disp, XDefaultGC(disp, DefaultScreen(disp)), color.pixel);
+    
+}
+
+void _drawBlack(int x, int y, int width, int height){
+        //XClearWindow(disp, ventana);
+        _drawString();
+        XFillRectangle(disp, ventana, XDefaultGC (disp, DefaultScreen(disp)),
+		x, y, width, height);
+	    XFlush (disp);
+        //sleep(1);
 }
 
 // Limpiar pantalla
