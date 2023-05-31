@@ -24,8 +24,10 @@ section .data
                                 ; 2 - Abajo
                                 ; 3 - Izquierda
     temp dd 0
+    food_index db 0 ;Aumentar cada que se coma
+    vecFood_x dw 120,450,50 ,350,27 ,434 ;Posicion de comida en x
+    vecFood_y dw 245,70 ,434,245,30 ,434 ;Posicion de comida en y
 
-;hola
     
 
 
@@ -221,8 +223,8 @@ section .text
         push dword 1  ;Color Rojo
         push dword 10 ;Ancho
         push dword 10 ;Altura
-        push dword 245 ;Posicion en y
-        push dword 120 ;Posicion en x
+        push dword vecFood_y[0] ;Posicion en y
+        push dword vecFood_x[0] ;Posicion en x
         push dword 0;Indice
         call _createRectangleColor
 
@@ -237,8 +239,8 @@ section .text
         push dword 1  ;Color Rojo
         push dword 10 ;Ancho
         push dword 10 ;Altura
-        push dword 70 ;Posicion en y
-        push dword 450 ;Posicion en x
+        push dword vecFood_y[2] ;Posicion en y
+        push dword vecFood_x[2] ;Posicion en x
         push dword 0 ;Indice
         call _createRectangleColor
 
@@ -253,8 +255,8 @@ section .text
         push dword 1  ;Color Rojo
         push dword 10 ;Ancho
         push dword 10 ;Altura
-        push dword 434 ;Posicion en y
-        push dword 50 ;Posicion en x
+        push dword vecFood_y[4] ;Posicion en y
+        push dword vecFood_x[4] ;Posicion en x
         push dword 0 ;Indice
         call _createRectangleColor
 
@@ -269,8 +271,8 @@ section .text
         push dword 1  ;Color Rojo
         push dword 10 ;Ancho
         push dword 10 ;Altura
-        push dword 245 ;Posicion en y
-        push dword 350 ;Posicion en x
+        push dword vecFood_y[6] ;Posicion en y
+        push dword vecFood_x[6] ;Posicion en x
         push dword 0;Indice
         call _createRectangleColor
 
@@ -285,8 +287,8 @@ section .text
         push dword 1  ;Color Rojo
         push dword 10 ;Ancho
         push dword 10 ;Altura
-        push dword 30 ;Posicion en y
-        push dword 27 ;Posicion en x
+        push dword vecFood_y[8];Posicion en y
+        push dword vecFood_x[8] ;Posicion en x
         push dword 0 ;Indice
         call _createRectangleColor
 
@@ -301,8 +303,8 @@ section .text
         push dword 1  ;Color Rojo
         push dword 10 ;Ancho
         push dword 10 ;Altura
-        push dword 434 ;Posicion en y
-        push dword 434 ;Posicion en x
+        push dword vecFood_y[10] ;Posicion en y
+        push dword vecFood_x[10] ;Posicion en x
         push dword 0 ;Indice
         call _createRectangleColor
 
@@ -367,3 +369,115 @@ section .text
         
         ret
 
+
+
+
+
+    check_block:
+            ;Comparar que se alimente
+            ;Tam de la comida: 10x10 px
+        food:
+            mov eax, food_index     ;Indice indica numero de comida en pantalla
+            mov ebx, vecFood_x[eax] ;Valor de la comida en x
+
+            mov eax, food_index     ;Indice indica numero de comida en pantalla
+            mov ecx, vecFood_y[eax] ;Valor de la comida en y
+
+            mov eax, snake_head     ;Indice de cabeza
+            mov edx, vec_x[eax]     ;Valor de la cabeza en x
+
+            mov eax, snake_head     ;Indice de cabeza
+            mov eax, vec_y[eax]     ;Valor de la cabeza en y
+
+                ;Evalua esquina superior izquierda
+            call four_sides
+
+                ;Evalua esquina superior derecha
+            add ebx, 10
+            call four_sides
+
+                ;Evalua esquina inferior izquierda
+            sub ebx, 10
+            add ecx, 10
+            call four_sides
+
+                ;Evalua esquina inferior derecha
+            add ebx, 10
+            call four_sides
+            jmp wall
+
+            four_sides:
+            cmp ebx, edx
+            jge step_one
+            ret
+            step_one:
+                add edx, 16
+                cmp ebx, edx
+                jle step_two
+                ret
+            step_two:
+                cmp ecx, edx
+                jge step_three
+                ret
+            step_three:
+                add edx, 16
+                cmp ecx, edx
+                jle eaten ;Aumentar food_index
+                ret
+            
+            ;Comparar que choque con muros(4 esquinas posibles de la cabeza)
+        wall:
+            mov eax, snake_head ;Indice de cabeza
+            mov edx, vec_x[eax] ;Valor de la cabeza en x
+
+            cmp edx, 25         ;Comparamos con el valor de una pared(Lateral izquierda) en x
+            jle death           ;Saltamos si es igual o menor al valor de x en la pared
+
+            add edx, 17
+            cmp edx, 475        ;Comparamos con el valor de una pared(Lateral derecha) en x
+            jge death           ;Saltamos si es igual o mayor al valor de x en la pared
+
+            mov eax, snake_head ;Indice de cabeza
+            mov edx, vec_y[eax] ;Valor de la cabeza en y
+
+            cmp edx, 25         ;Comparamos con el valor de una pared(Arriba) en y
+            jle death           ;Saltamos si es igual o mayor al valor de y en la pared
+
+            add edx, 17
+            cmp edx, 475        ;Comparamos con el valor de una pared(Abajo) en y
+            jge death           ;Saltamos si es igual o mayor al valor de y en la pared
+
+
+            ;Comparar que choque consigo mismo
+            
+            mov ecx, snake_size ;for loop
+            dec ecx ; Revisar, posible error de segmento con snake_size
+
+            mov eax, snake_head ;Indice de cabeza
+            mov edx, vec_x[eax] ;Valor de la cabeza en x
+
+            xor eax,eax
+            mov eax,0 ;Contador auxiliar para recorrer vec de snake
+            cross_body:
+                ;Solo evaluar 1 esquina
+                cmp eax, snake_head  ;Provar corchetes
+                je continue
+
+                mov ebx, vecFood_x[eax] ;Valor de la comida en x
+
+                cmp ebx, edx
+                je death
+
+                continue:
+                add eax, 2 ;Incrementa index
+                dec ecx
+                loop cross_body
+         llamadaPrincipal: ; Al terminar loop
+            ;devolver a donde se llama las verificaciones
+
+        death:
+            ;Murió
+            jmp ext1
+
+        eaten:
+            ;Comió
