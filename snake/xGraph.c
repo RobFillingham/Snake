@@ -82,7 +82,7 @@ char _setup(char* s){
 
 void _draw(){
         //XClearWindow(disp, ventana);
-        _drawString();
+        //_drawString();
         XFillRectangles (disp, ventana, XDefaultGC (disp, DefaultScreen(disp)),
 		    recArray, size);
 	    XFlush (disp);
@@ -158,7 +158,7 @@ void _paintBlack(){
 
 void _drawBlack(int x, int y, int width, int height){
         //XClearWindow(disp, ventana);
-        _drawString();
+        //_drawString();
         XFillRectangle(disp, ventana, XDefaultGC (disp, DefaultScreen(disp)),
 		x, y, width, height);
 	    XFlush (disp);
