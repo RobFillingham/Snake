@@ -14,10 +14,10 @@ GLOBAL main
 ;./xGraph
 
 section .data
-    snake_head dd 2             ;Posicion de la cabeza (Segunda posiscion en el vector)
+    snake_head dd 4             ;Posicion de la cabeza (Segunda posiscion en el vector)
     snake_tail dd 0
-    vec_x dw 300,317,250,0,0,0,0  ;Posicion de snake en x
-    vec_y dw 300,300,250,0,0,0,0  ;Poiscion de snake en y
+    vec_x dd 300,317,250,0,0,0,0  ;Posicion de snake en x
+    vec_y dd 300,300,250,0,0,0,0  ;Poiscion de snake en y
     snake_size dd 2             ;Longitud snake
     direccion db 1              ; 0 - Arriba
                                 ; 1 - Derecha
@@ -55,6 +55,7 @@ section .text
         ; Ciclo principal **
 
 
+        
         call moverDerecha
         push dword 1
         call _sleep
@@ -63,7 +64,11 @@ section .text
         push dword 1
         call _sleep
         add esp, 4
-        call moverDerecha
+        call moverArriba
+        push dword 1
+        call _sleep
+        add esp, 4
+        call moverArriba
         push dword 1
         call _sleep
         add esp, 4
@@ -71,7 +76,11 @@ section .text
         push dword 1
         call _sleep
         add esp, 4
-        call moverDerecha
+        call moverAbajo
+        push dword 1
+        call _sleep
+        add esp, 4
+        call moverAbajo
         push dword 1
         call _sleep
         add esp, 4
@@ -79,15 +88,34 @@ section .text
         push dword 1
         call _sleep
         add esp, 4
-        call moverDerecha
+        call moverArriba
         push dword 1
         call _sleep
         add esp, 4
-        call moverDerecha
+        call moverArriba
         push dword 1
         call _sleep
         add esp, 4
-
+        call moverArriba
+        push dword 1
+        call _sleep
+        add esp, 4
+        call moverIzquierda
+        push dword 1
+        call _sleep
+        add esp, 4        
+        call moverIzquierda
+        push dword 1
+        call _sleep
+        add esp, 4  
+        call moverIzquierda
+        push dword 1
+        call _sleep
+        add esp, 4  
+        call moverIzquierda
+        push dword 1
+        call _sleep
+        add esp, 4  
         ; ********
         
         
@@ -389,9 +417,9 @@ section .text
         push dword 2 ;Color verde
         push dword 17 ;Ancho
         push dword 17 ;Altura
-        push dword vec_y[2] ;Posicion en y
-        push dword vec_x[2] ;Posicion en x
-        push dword 1 ;Indice
+        push dword vec_y[4] ;Posicion en y
+        push dword vec_x[4] ;Posicion en x
+        push dword 4;Indice
         call _createRectangleColor
 
         add esp, 24
@@ -511,8 +539,8 @@ section .text
         push dword 17 ;Ancho
         push dword 17 ;Altura
         mov esi, [snake_tail]
-        mov eax, 0
-        mov eax, [vec_y+esi] ;Posicion en y  ;INDEXAR LOS VECTORES NO SE ESTA REALIZANDO CORRECTAMENTE
+        xor eax, eax
+        mov eax, vec_y[esi] ;Posicion en y  ;INDEXAR LOS VECTORES NO SE ESTA REALIZANDO CORRECTAMENTE
         push dword eax
         mov eax, 0
         mov eax, [vec_x+esi] ;Posicion en x
@@ -526,17 +554,17 @@ section .text
         push dword 17 ;Ancho
         push dword 17 ;Altura
         mov esi, [snake_head]
-        mov eax, [vec_y+esi] ; eax = vec_y[snake_head]
+        mov eax, vec_y[esi] ; eax = vec_y[snake_head]
         mov esi, [snake_tail]
-        mov [vec_y+esi], eax
+        mov vec_y[esi], eax
         push eax; posicion en y   
         ;determinar x_future
         mov esi, [snake_head]
         mov eax, 0
-        mov eax, [vec_x + esi]
+        mov eax, vec_x[esi]
         add eax, 17
         mov esi, [snake_tail]
-        mov [vec_x+esi], eax ;actualizar x de la tail
+        mov vec_x[esi], eax ;actualizar x de la tail
         push dword eax ;Posicion en x
         push dword [snake_tail]; index
         call _createRectangleColor
@@ -554,11 +582,11 @@ section .text
         
         mov eax, 0
         mov eax, [snake_size]
-        mov ebx, 2
-        mul ebx ; eax = snake_size*2
+        mov ebx, 4
+        mul ebx ; eax = snake_size*4
         mov ebx, 0
         mov ebx, [snake_tail]
-        add ebx, 2; ebx = snake_tail+2
+        add ebx, 4; ebx = snake_tail+2
 
         cmp ebx, eax
         jb  cero
@@ -576,6 +604,224 @@ section .text
         ret
 
 
+moverIzquierda:
+
+        ;borrar tail
+    
+        call _paintBlack ; pone el color en negro
+
+        push dword 17 ;Ancho
+        push dword 17 ;Altura
+        mov esi, [snake_tail]
+        xor eax, eax
+        mov eax, vec_y[esi] ;Posicion en y  ;INDEXAR LOS VECTORES NO SE ESTA REALIZANDO CORRECTAMENTE
+        push dword eax
+        mov eax, 0
+        mov eax, [vec_x+esi] ;Posicion en x
+        push dword eax
+        call _drawBlack
+        add esp, 16
+
+        ;mover tail
+
+        push dword 2;Color azul
+        push dword 17 ;Ancho
+        push dword 17 ;Altura
+        mov esi, [snake_head]
+        mov eax, vec_y[esi] ; eax = vec_y[snake_head]
+        mov esi, [snake_tail]
+        mov vec_y[esi], eax
+        push eax; posicion en y   
+        ;determinar x_future
+        mov esi, [snake_head]
+        mov eax, 0
+        mov eax, vec_x[esi]
+        sub eax, 17
+        mov esi, [snake_tail]
+        mov vec_x[esi], eax ;actualizar x de la tail
+        push dword eax ;Posicion en x
+        push dword [snake_tail]; index
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+    
+        push 1
+        call _sleep
+        add esp, 4
+
+        ;Actualizar tail y head 
+        mov eax, 0
+        mov eax, [snake_tail] ;temp = snake_tail
+        mov [temp], eax
+        
+        mov eax, 0
+        mov eax, [snake_size]
+        mov ebx, 4
+        mul ebx ; eax = snake_size*4
+        mov ebx, 0
+        mov ebx, [snake_tail]
+        add ebx, 4; ebx = snake_tail+2
+
+        cmp ebx, eax
+        jb  ceroIzq
+        mov eax, 0
+        mov [snake_tail], eax
+        jmp cuatroIzq 
+        ceroIzq:
+            mov [snake_tail], ebx
+        cuatroIzq:
+        mov eax, [temp]
+        mov [snake_head], eax
+
+        ;call check_block
+
+        ret
+
+    moverArriba:
+
+        ;borrar tail
+    
+        call _paintBlack ; pone el color en negro
+    
+        push dword 17 ;Ancho
+        push dword 17 ;Altura
+        mov esi, [snake_tail]
+        xor eax, eax
+        mov eax, vec_y[esi] ;Posicion en y  ;INDEXAR LOS VECTORES NO SE ESTA REALIZANDO CORRECTAMENTE
+        push dword eax
+        mov eax, 0
+        mov eax, [vec_x+esi] ;Posicion en x
+        push dword eax
+        call _drawBlack
+        add esp, 16
+    
+        ;mover tail
+        ;determinar y future
+        push dword 2;Color azul
+        push dword 17 ;Ancho
+        push dword 17 ;Altura
+        mov esi, [snake_head]
+        mov eax, vec_y[esi] ; eax = vec_y[snake_head]
+        sub eax, 17
+        mov esi, [snake_tail]
+        mov vec_y[esi], eax
+        push eax; posicion en y   
+        ;determinar x_future
+        mov esi, [snake_head]
+        mov eax, 0
+        mov eax, vec_x[esi]
+        mov esi, [snake_tail]
+        mov vec_x[esi], eax ;actualizar x de la tail
+        push dword eax ;Posicion en x
+        push dword [snake_tail]; index
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+    
+        push 1
+        call _sleep
+        add esp, 4
+    
+        ;Actualizar tail y head 
+        mov eax, 0
+        mov eax, [snake_tail] ;temp = snake_tail
+        mov [temp], eax
+        
+        mov eax, 0
+        mov eax, [snake_size]
+        mov ebx, 4
+        mul ebx ; eax = snake_size*4
+        mov ebx, 0
+        mov ebx, [snake_tail]
+        add ebx, 4; ebx = snake_tail+2
+
+        cmp ebx, eax
+        jb  ceroArriba
+        mov eax, 0
+        mov [snake_tail], eax
+        jmp cuatroArriba 
+        ceroArriba:
+            mov [snake_tail], ebx
+        cuatroArriba:
+        mov eax, [temp]
+        mov [snake_head], eax
+
+        ;call check_block
+
+        ret
+
+    moverAbajo:
+
+        ;borrar tail
+    
+        call _paintBlack ; pone el color en negro
+    
+        push dword 17 ;Ancho
+        push dword 17 ;Altura
+        mov esi, [snake_tail]
+        xor eax, eax
+        mov eax, vec_y[esi] ;Posicion en y  ;INDEXAR LOS VECTORES NO SE ESTA REALIZANDO CORRECTAMENTE
+        push dword eax
+        mov eax, 0
+        mov eax, [vec_x+esi] ;Posicion en x
+        push dword eax
+        call _drawBlack
+        add esp, 16
+    
+        ;mover tail
+        ;determinar y future
+        push dword 2;Color azul
+        push dword 17 ;Ancho
+        push dword 17 ;Altura
+        mov esi, [snake_head]
+        mov eax, vec_y[esi] ; eax = vec_y[snake_head]
+        add eax, 17
+        mov esi, [snake_tail]
+        mov vec_y[esi], eax
+        push eax; posicion en y   
+        ;determinar x_future
+        mov esi, [snake_head]
+        mov eax, 0
+        mov eax, vec_x[esi]
+        mov esi, [snake_tail]
+        mov vec_x[esi], eax ;actualizar x de la tail
+        push dword eax ;Posicion en x
+        push dword [snake_tail]; index
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+    
+        push 1
+        call _sleep
+        add esp, 4
+    
+        ;Actualizar tail y head 
+        mov eax, 0
+        mov eax, [snake_tail] ;temp = snake_tail
+        mov [temp], eax
+        
+        mov eax, 0
+        mov eax, [snake_size]
+        mov ebx, 4
+        mul ebx ; eax = snake_size*4
+        mov ebx, 0
+        mov ebx, [snake_tail]
+        add ebx, 4; ebx = snake_tail+2
+
+        cmp ebx, eax
+        jb  ceroAbajo
+        mov eax, 0
+        mov [snake_tail], eax
+        jmp cuatroAbajo 
+        ceroAbajo:
+            mov [snake_tail], ebx
+        cuatroAbajo:
+        mov eax, [temp]
+        mov [snake_head], eax
+
+        ;call check_block
+
+        ret
 
 
 
