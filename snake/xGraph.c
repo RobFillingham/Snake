@@ -172,5 +172,5 @@ void _clearScreen() {
 }
 
 void _sleep(int var){
-    sleep(var);
+    usleep(var);
 }
