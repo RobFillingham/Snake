@@ -18,7 +18,7 @@ section .data
     snake_tail dd 0
     vec_x dd 300,317,250,0,0,0,0  ;Posicion de snake en x
     vec_y dd 300,300,250,0,0,0,0  ;Poiscion de snake en y
-    snake_size dd 2             ;Longitud snake
+    snake_size dd 2             ;Longitud snake, cada unidad es un cuadro de la snake
     direccion db 1              ; 0 - Arriba
                                 ; 1 - Derecha
                                 ; 2 - Abajo
@@ -64,43 +64,43 @@ section .text
         push dword 999999
         call _sleep
         add esp, 4
-        call moverDerecha
+        call moverArriba
         push dword 999999
         call _sleep
         add esp, 4
-        call moverDerecha
+        call moverArriba
         push dword 999999
         call _sleep
         add esp, 4
-        call moverDerecha
+        call moverArriba
         push dword 999999
         call _sleep
         add esp, 4
-        call moverDerecha
+        call moverArriba
         push dword 999999
         call _sleep
         add esp, 4
-        call moverDerecha
+        call moverIzquierda
         push dword 1
         call _sleep
         add esp, 4
-        call moverDerecha
+        call moverAbajo
         push dword 1
         call _sleep
         add esp, 4
-        call moverDerecha
+        call moverAbajo
         push dword 999999
         call _sleep
         add esp, 4
-        call moverDerecha
+        call moverAbajo
         push dword 1
         call _sleep
         add esp, 4
-        call moverDerecha
+        call moverAbajo
         push dword 1
         call _sleep
         add esp, 4
-        call moverDerecha
+        call moverAbajo
         push dword 999999
         call _sleep
         add esp, 4
@@ -986,5 +986,64 @@ moverIzquierda:
 
             jmp ext1
 
-        eaten:
-            ;Comió
+        eaten: ;cuando la serpiente come
+
+            mov eax, [snake_size] ;Incrementar la variable que indica el tamaño de la snake
+            inc eax
+            mov [snake_size], eax
+
+            ;evaluar si su tamaño es 10
+            cmp eax, 10
+            jb increase
+            ;call endgame
+            increase:
+                mov ebx, 0
+                mov [snake_tail], ebx ;ajustar la tail al inicio del vector
+                mov ebx, [snake_size] 
+                dec ebx
+                mov eax, 4      ;ajustar la head al final del vector considerando que crecio una casilla
+                mul ebx
+                mov [snake_head], eax
+
+            ;Reajustar los valores de ambos vectores
+
+            mov ecx, [snake_size] 
+            dec ecx
+            mov eax, 300 ;inicializar los casillas de vec_x
+            mov ebx, 300 ;inicializar las casillas de vec_y
+            mov esi, 0
+            mov edi, 0
+            vectores:
+                
+                mov vec_x[esi], eax
+                mov vec_y[esi], ebx
+
+                call upload
+
+                add eax, 17
+                add esi, 4
+                inc edi
+
+            loop vectores
+
+            call _draw
+
+            ret
+
+        upload:
+
+            push dword 2 ;Color verde
+            push dword 17 ;Ancho
+            push dword 17 ;Altura
+            push dword vec_y[esi] ;Posicion en y
+            push dword vec_x[esi] ;Posicion en x
+            push dword edi ;Indice
+            call _createRectangleColor
+
+            add esp, 24
+
+            ret
+
+                
+
+
