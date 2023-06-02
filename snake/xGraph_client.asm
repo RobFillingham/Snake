@@ -60,10 +60,6 @@ section .text
         push dword 999999
         call _sleep
         add esp, 4
-        call moverDerecha
-        push dword 999999
-        call _sleep
-        add esp, 4
         call moverArriba
         push dword 999999
         call _sleep
@@ -79,27 +75,37 @@ section .text
         call moverArriba
         push dword 999999
         call _sleep
+        add esp, 4
+        call moverArriba
+        push dword 999999
+        call _sleep
+        one:
         add esp, 4
         call moverIzquierda
         push dword 1
         call _sleep
         add esp, 4
-        call moverAbajo
-        push dword 1
+        two:
+        call moverIzquierda
+        push dword 999999
         call _sleep
         add esp, 4
+        three:
+        call moverIzquierda
+        push dword 999999
+        call _sleep
+        add esp, 4
+        four:
         call moverAbajo
         push dword 999999
         call _sleep
         add esp, 4
+        five:
         call moverAbajo
-        push dword 1
+        push dword 999999
         call _sleep
         add esp, 4
-        call moverAbajo
-        push dword 1
-        call _sleep
-        add esp, 4
+        six:
         call moverAbajo
         push dword 999999
         call _sleep
