@@ -16,9 +16,9 @@ GLOBAL main
 section .data
     snake_head dd 4             ;Posicion de la cabeza (Segunda posiscion en el vector)
     snake_tail dd 0
-    vec_x dd 300,317,250,0,0,0,0  ;Posicion de snake en x
-    vec_y dd 300,300,250,0,0,0,0  ;Poiscion de snake en y
-    snake_size dd 2             ;Longitud snake, cada unidad es un cuadro de la snake
+    vec_x dd 300,317,0,0,0,0,0  ;Posicion de snake en x
+    vec_y dd 300,300,0,0,0,0,0  ;Poiscion de snake en y
+    snake_size dd 2             ;Longitud snake
     direccion db 1              ; 0 - Arriba
                                 ; 1 - Derecha
                                 ; 2 - Abajo
