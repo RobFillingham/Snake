@@ -14,27 +14,43 @@ GLOBAL main
 ;./xGraph
 
 section .data
-    snake_head dd 12             ;Posicion de la cabeza (Segunda posiscion en el vector)
+    snake_head dd 4             ;Posicion de la cabeza (Segunda posiscion en el vector)
     snake_tail dd 0
-    vec_x dd 300,317,334,351,0,0,0,0,0,0  ;Posicion de snake en x
-    vec_y dd 300,300,300,300,0,0,0,0,0,0  ;Poiscion de snake en y
-    snake_size dd 4             ;Longitud snake
+    vec_x dd 300,317,0,0,0,0,0  ;Posicion de snake en x
+    vec_y dd 300,300,0,0,0,0,0  ;Poiscion de snake en y
+    snake_size dd 2             ;Longitud snake
     direccion db 1              ; 0 - Arriba
                                 ; 1 - Derecha
                                 ; 2 - Abajo
                                 ; 3 - Izquierda
     temp dd 0
     food_index dd 0 ;Aumentar cada que se coma
-    vecFood_x dw 120,450,50 ,350,27 ,434 ;Posicion de comida en x
-    vecFood_y dw 245,70 ,434,245,30 ,434 ;Posicion de comida en y
-    counter dd 0
+    vecFood_x dd 120,450,50 ,350,27 ,434 ;Posicion de comida en x
+    vecFood_y dd 245,70 ,434,245,30 ,434 ;Posicion de comida en y
 
+
+    counter dd 0
     tail_backup_x dd 0
     tail_backup_y dd 0
-
     x dd 0
     y dd 0
-    
+
+    direction db 2  ; Dirección inicial del Snake (2: derecha)
+    keyPressed db 0 ; Tecla presionada por el jugador
+    rflag db 0
+    msg db "q"
+    msg2 db "o"
+
+
+section .bss
+    key resb 1
+    termios:
+        c_iflag resd 1 ;Input Mode Flags
+        c_oflag resd 1 ;Output Mode Flags
+        c_cflag resd 1 ;Control Mode Flags
+        c_lflag resd 1 ;Local Mode Flags
+        c_line  resb 1 ;Line Discipline
+        c_cc    resb 19 ; Control Characters
 
 
 section .text
@@ -43,129 +59,141 @@ section .text
         call _setup
         call printLogo
         call _clearScreen
-
         ; Segundos antes de dibujar cuadro
         push dword 999999
         call _sleep
         add esp, 4
         
-        call print_wall ;Pinta un rectangulo
+        
         call print_food
-        ;call print_snake ;Pintar la serpiente 
+        call _clearScreen
+
+;********************** Primer comida disponible
+        push dword 1  ;Color Rojo
+        push dword 10 ;Ancho
+        push dword 10 ;Altura
+        push dword vecFood_y[0] ;Posicion en y
+        push dword vecFood_x[0] ;Posicion en x
+        push dword 0;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+;************************
+
+        call print_wall ;Pinta un rectangulo
+        call print_snake ;Pintar la serpiente 
 
         ; Para ver lo suficiente
         push dword 999999
         call _sleep
         add esp, 4
 
-        ; Ciclo principal **
+        call terminal_cruda
+        ;mov byte [key], 100; Cambiar la dirección a derecha
+
+        ; Bucle principal del juego
+    game_loop:
+        ;PRUEBA
+        xor eax,eax
+        xor ebx,ebx
+        xor ecx,ecx
+        xor edx,edx
+        xor edi,edi
+        xor esi,esi
+        mov byte [key],0
+        call limpiar_vec
+        ; Leer la tecla presionada por el jugador
+        mov eax, 0x03
+        mov edi, 0
+        mov ecx, key
+        mov edx, 1
+        int 0x80
+
+        ; Verificar la tecla presionada y cambiar la dirección del Snake
+        cmp byte [key], 0
+        je no_key_pressed
+
+        cmp byte [key], 119 ; w
+        je arrow_up
+        cmp byte [key], 115 ; s
+        je arrow_down
+        cmp byte [key], 97  ; a
+        je arrow_left
+        cmp byte [key], 100 ; d
+        je arrow_right
+        cmp byte [key], 113 ; q
+        je ext1
+            ; Ciclo principal **
+
+    no_key_pressed:
+        ; Sin tecla presionada, continuar con la dirección actual del Snake
+        jmp game_loop
+
+    arrow_up:
+        cmp byte [direction], 3 ; Si la dirección actual es abajo, no permitir el movimiento hacia arriba
+        je move_snake
+        mov byte [direction], 1 ; Cambiar la dirección a arriba
+        jmp move_snake
+
+    arrow_down:
+        cmp byte [direction], 1 ; Si la dirección actual es arriba, no permitir el movimiento hacia abajo
+        je move_snake
+        mov byte [direction], 3 ; Cambiar la dirección a abajo
+
+        jmp move_snake
+
+    arrow_left:
+        cmp byte [direction], 2 ; Si la dirección actual es derecha, no permitir el movimiento hacia la izquierda
+        je move_snake
+        mov byte [direction], 4 ; Cambiar la dirección a izquierda
+        jmp move_snake
+
+    arrow_right:
+        cmp byte [direction], 4 ; Si la dirección actual es izquierda, no permitir el movimiento hacia la derecha
+        je move_snake
+        mov byte [direction], 2 ; Cambiar la dirección a derecha
+        jmp move_snake
+
+    move_snake:
+        ; Mover el Snake según la dirección actual
+        cmp byte [direction],1
+        je mover_arriba
+
+        cmp byte [direction],2
+        je mover_derecha
+
+        cmp byte [direction],3
+        je mover_abajo
+
+        cmp byte [direction],4
+        je mover_izquierda
+    
+        mover_arriba:
+            call moverArriba
+            jmp continue2
+
+        mover_derecha:
+            call moverDerecha
+            jmp continue2
+
+        mover_abajo:
+            call moverAbajo
+            jmp continue2
+
+        mover_izquierda:
+            call moverIzquierda
+            jmp continue2
 
 
-        
-        call moverDerecha
-        push dword 999999
-        call _sleep
-        add esp, 4
-        call moverDerecha
-        push dword 999999
-        call _sleep
-        add esp, 4
-        call moverDerecha
-        push dword 999999
-        call _sleep
-        add esp, 4
-        call moverDerecha
-        push dword 999999
-        call _sleep
-        add esp, 4
+        continue2:
+        mov eax, 0x04
+        mov ebx, 1
+        mov ecx, msg
+        mov edx, 1
+        int 0x80
 
-        call eaten
-
-        a:
-
-        call moverArriba
-        push dword 999999
-        call _sleep
-        add esp, 4
-
-        b:
-
-        call moverArriba
-        push dword 999999
-        call _sleep
-        one1:
-        add esp, 4
-        call moverArriba
-        push dword 999999
-        call _sleep
-        add esp, 4
-
-        call eaten
-
-        two2:
-        call moverArriba
-        push dword 999999
-        call _sleep
-        add esp, 4
-        three3:
-        call moverArriba
-        push dword 999999
-        call _sleep
-        add esp, 4
-        four4:
-        call moverIzquierda
-        push dword 999999
-        call _sleep
-        add esp, 4
-        five5:
-        call moverIzquierda
-        push dword 999999
-        call _sleep
-        add esp, 4
-        six6:
-        call moverIzquierda
-        push dword 999999
-        call _sleep
-        add esp, 4
-
-        call eaten
-
-        call moverIzquierda
-        push dword 999999
-        call _sleep
-        add esp, 4
-
-        call moverIzquierda
-        push dword 999999
-        call _sleep
-        add esp, 4
-
-        call eaten
-
-        call moverIzquierda
-        push dword 999999
-        call _sleep
-        add esp, 4
-
-        call moverIzquierda
-        push dword 999999
-        call _sleep
-        add esp, 4
-
-        call eaten
-
-
-        call moverAbajo
-        push dword 999999
-        call _sleep
-        add esp, 4
-
-        call moverAbajo
-        push dword 999999
-        call _sleep
-        add esp, 4
-
-        call eaten
+        ; Repetir el bucle principal del juego
+        jmp game_loop
 
         ; ********
         
@@ -173,6 +201,15 @@ section .text
 
 
     ext1:
+        mov al, byte [rflag]
+        mov byte [c_lflag], al
+
+        mov eax, 0x36
+        mov ebx, 0
+        mov ecx, 0x5402
+        mov edx, termios
+        int 0x80
+
         mov eax, 1
         int 0x80
 
@@ -504,22 +541,6 @@ section .text
         push dword 1  ;Color Rojo
         push dword 10 ;Ancho
         push dword 10 ;Altura
-        push dword vecFood_y[2] ;Posicion en y
-        push dword vecFood_x[2] ;Posicion en x
-        push dword 0 ;Indice
-        call _createRectangleColor
-
-        add esp, 24
-
-        call _draw
-
-        push dword 999999
-        call _sleep
-        add esp, 4
-
-        push dword 1  ;Color Rojo
-        push dword 10 ;Ancho
-        push dword 10 ;Altura
         push dword vecFood_y[4] ;Posicion en y
         push dword vecFood_x[4] ;Posicion en x
         push dword 0 ;Indice
@@ -536,23 +557,7 @@ section .text
         push dword 1  ;Color Rojo
         push dword 10 ;Ancho
         push dword 10 ;Altura
-        push dword vecFood_y[6] ;Posicion en y
-        push dword vecFood_x[6] ;Posicion en x
-        push dword 0;Indice
-        call _createRectangleColor
-
-        add esp, 24
-
-        call _draw
-
-        push dword 999999
-        call _sleep
-        add esp, 4
-
-        push dword 1  ;Color Rojo
-        push dword 10 ;Ancho
-        push dword 10 ;Altura
-        push dword vecFood_y[8];Posicion en y
+        push dword vecFood_y[8] ;Posicion en y
         push dword vecFood_x[8] ;Posicion en x
         push dword 0 ;Indice
         call _createRectangleColor
@@ -568,8 +573,40 @@ section .text
         push dword 1  ;Color Rojo
         push dword 10 ;Ancho
         push dword 10 ;Altura
-        push dword vecFood_y[10] ;Posicion en y
-        push dword vecFood_x[10] ;Posicion en x
+        push dword vecFood_y[12] ;Posicion en y
+        push dword vecFood_x[12] ;Posicion en x
+        push dword 0;Indice
+        call _createRectangleColor
+
+        add esp, 24
+
+        call _draw
+
+        push dword 999999
+        call _sleep
+        add esp, 4
+
+        push dword 1  ;Color Rojo
+        push dword 10 ;Ancho
+        push dword 10 ;Altura
+        push dword vecFood_y[16];Posicion en y
+        push dword vecFood_x[16] ;Posicion en x
+        push dword 0 ;Indice
+        call _createRectangleColor
+
+        add esp, 24
+
+        call _draw
+
+        push dword 999999
+        call _sleep
+        add esp, 4
+
+        push dword 1  ;Color Rojo
+        push dword 10 ;Ancho
+        push dword 10 ;Altura
+        push dword vecFood_y[20] ;Posicion en y
+        push dword vecFood_x[20] ;Posicion en x
         push dword 0 ;Indice
         call _createRectangleColor
 
@@ -605,16 +642,14 @@ section .text
         add esp, 16
   
         ;mover tail
-one:
+
         push dword 2;Color azul
         push dword 17 ;Ancho
         push dword 17 ;Altura
         mov esi, [snake_head]
         mov eax, vec_y[esi] ; eax = vec_y[snake_head]
         mov esi, [snake_tail]
-        mov ebx, vec_y[esi]
-        mov [tail_backup_y], ebx ;hacer backup de y
-        mov vec_y[esi], eax ;asiganrle su nuevo valor en y
+        mov vec_y[esi], eax
         push eax; posicion en y   
         ;determinar x_future
         mov esi, [snake_head]
@@ -622,8 +657,6 @@ one:
         mov eax, vec_x[esi]
         add eax, 17
         mov esi, [snake_tail]
-        mov ebx, vec_x[esi]
-        mov [tail_backup_x], ebx;hacer backup de la posicion en x
         mov vec_x[esi], eax ;actualizar x de la tail
         push dword eax ;Posicion en x
         push dword [snake_tail]; index
@@ -659,7 +692,7 @@ one:
         mov eax, [temp]
         mov [snake_head], eax
 
-        ;call check_block
+        call check_block
 
         ret
 
@@ -674,7 +707,7 @@ moverIzquierda:
         push dword 17 ;Altura
         mov esi, [snake_tail]
         xor eax, eax
-        mov eax, vec_y[esi] ;Posicion en y  
+        mov eax, vec_y[esi] ;Posicion en y  ;INDEXAR LOS VECTORES NO SE ESTA REALIZANDO CORRECTAMENTE
         push dword eax
         mov eax, 0
         mov eax, [vec_x+esi] ;Posicion en x
@@ -683,14 +716,13 @@ moverIzquierda:
         add esp, 16
 
         ;mover tail
-two:
+
         push dword 2;Color azul
         push dword 17 ;Ancho
         push dword 17 ;Altura
         mov esi, [snake_head]
         mov eax, vec_y[esi] ; eax = vec_y[snake_head]
         mov esi, [snake_tail]
-        mov ebx, vec_y[esi];backup de tail en y
         mov vec_y[esi], eax
         push eax; posicion en y   
         ;determinar x_future
@@ -699,8 +731,6 @@ two:
         mov eax, vec_x[esi]
         sub eax, 17
         mov esi, [snake_tail]
-        mov ebx, vec_x[esi]
-        mov [tail_backup_x], ebx
         mov vec_x[esi], eax ;actualizar x de la tail
         push dword eax ;Posicion en x
         push dword [snake_tail]; index
@@ -736,7 +766,7 @@ two:
         mov eax, [temp]
         mov [snake_head], eax
 
-        ;call check_block
+        call check_block
 
         ret
 
@@ -757,7 +787,7 @@ two:
         push dword eax
         call _drawBlack
         add esp, 16
-    three:
+    
         ;mover tail
         ;determinar y future
         push dword 2;Color azul
@@ -767,8 +797,6 @@ two:
         mov eax, vec_y[esi] ; eax = vec_y[snake_head]
         sub eax, 17
         mov esi, [snake_tail]
-        mov ebx, vec_y[esi]
-        mov [tail_backup_y], ebx ;backup en y
         mov vec_y[esi], eax
         push eax; posicion en y   
         ;determinar x_future
@@ -776,8 +804,6 @@ two:
         mov eax, 0
         mov eax, vec_x[esi]
         mov esi, [snake_tail]
-        mov ebx, vec_x[esi]
-        mov [tail_backup_x], ebx ;backup en x
         mov vec_x[esi], eax ;actualizar x de la tail
         push dword eax ;Posicion en x
         push dword [snake_tail]; index
@@ -813,7 +839,7 @@ two:
         mov eax, [temp]
         mov [snake_head], eax
         
-        ;call check_block
+        call check_block
 
         ret
 
@@ -834,7 +860,7 @@ two:
         push dword eax
         call _drawBlack
         add esp, 16
-    four:
+    
         ;mover tail
         ;determinar y future
         push dword 2;Color azul
@@ -844,8 +870,6 @@ two:
         mov eax, vec_y[esi] ; eax = vec_y[snake_head]
         add eax, 17
         mov esi, [snake_tail]
-        mov ebx, vec_y[esi]
-        mov [tail_backup_y], ebx
         mov vec_y[esi], eax
         push eax; posicion en y   
         ;determinar x_future
@@ -853,8 +877,6 @@ two:
         mov eax, 0
         mov eax, vec_x[esi]
         mov esi, [snake_tail]
-        mov ebx, vec_x[esi]
-        mov [tail_backup_x], ebx
         mov vec_x[esi], eax ;actualizar x de la tail
         push dword eax ;Posicion en x
         push dword [snake_tail]; index
@@ -890,7 +912,7 @@ two:
         mov eax, [temp]
         mov [snake_head], eax
 
-        ;call check_block
+        call check_block
 
         ret
 
@@ -927,7 +949,7 @@ two:
                 ;Evalua esquina inferior derecha
             add ebx, 10
             call four_sides
-            
+    bb:
             jmp wall
 
             four_sides:
@@ -940,23 +962,24 @@ two:
                 jle step_two
                 ret
             step_two:
-                cmp ecx, edx
+                cmp ecx, eax
                 jge step_three
                 ret
             step_three:
-                add edx, 16
-                cmp ecx, edx
+                add eax, 16
+                cmp ecx, eax
                 jle eaten ;Aumentar food_index
                 ret
             
             ;Comparar que choque con muros(4 esquinas posibles de la cabeza)
         wall:
+          
             mov eax, [snake_head] ;Indice de cabeza
             mov edx, [vec_x+eax] ;Valor de la cabeza en x
-
+        
             cmp edx, 25         ;Comparamos con el valor de una pared(Lateral izquierda) en x
             jle death           ;Saltamos si es igual o menor al valor de x en la pared
-
+        
             add edx, 17
             cmp edx, 475        ;Comparamos con el valor de una pared(Lateral derecha) en x
             jge death           ;Saltamos si es igual o mayor al valor de x en la pared
@@ -975,17 +998,17 @@ two:
             ;Comparar que choque consigo mismo
             
             mov ecx, [snake_size] ;for loop
-            dec ecx ; Revisar, posible error de segmento con snake_size
+            ;dec ecx ; Revisar, posible error de segmento con snake_size
 
             mov eax, [snake_head] ;Indice de cabeza
             mov edx, [vec_x+eax] ;Valor de la cabeza en x
 
             xor eax,eax
             mov eax,0 ;Contador auxiliar para recorrer vec de snake
-            
+   
         cross_body:
                 ;Solo evaluar 1 esquina
-                cmp eax, snake_head  ;Provar corchetes
+                cmp eax, [snake_head]  ;Cuando es la cabeza.. Provar corchetes
                 je continue
 
                 mov ebx, [vecFood_x+eax] ;Valor de la comida en x
@@ -994,7 +1017,7 @@ two:
                 je death
 
                 continue:
-                add eax, 2 ;Incrementa index
+                add eax, 4 ;Incrementa index
                 dec ecx
                 loop cross_body
             
@@ -1063,14 +1086,69 @@ two:
 
             jmp ext1
 
-        eaten: ;cuando la serpiente come
-
+        eaten:
             ;verificar si se acabo el juego
             
             mov eax, [snake_size]
             cmp eax, 10
             ;call endgame
+            ;Borrar la comida
+            push dword 4  ;Color negro
+            push dword 10 ;Ancho
+            push dword 10 ;Altura
+            mov eax, [food_index]
+            push dword [vecFood_y+eax] ;Posicion en y
+            push dword [vecFood_x+eax] ;Posicion en x
+            push dword 0 ;Indice cabeza
+            call _createRectangleColor
+            add esp, 24
+            call _draw
+            
+            ;Volver a pintar snake
+            mov edx, [snake_size]
+            mov eax, 0
+        pintar_toda:
+            push dword 2 ;Color azul
+            push dword 17 ;Ancho
+            push dword 17 ;Altura
+            push dword [vec_y+eax] ;Posicion en y
+            push dword [vec_x+eax] ;Posicion en x
+            push dword 0 ;Indice   ;ARREGLAR
+            call _createRectangleColor
+            add esp, 24
+            call _draw
+            add eax, 4
+            dec edx
+            cmp edx, 0
+            jg pintar_toda
 
+            ;Aumetar inidice de comida
+            add dword [food_index], 4  ;Siguiente comida
+            ;Dibujar la siguiente comida 
+            push dword 1  ;Color negro
+            push dword 10 ;Ancho
+            push dword 10 ;Altura
+            mov eax, [food_index]
+            push dword [vecFood_y+eax] ;Posicion en y
+            push dword [vecFood_x+eax] ;Posicion en x
+            push dword 0 ;Indice cabeza 
+            call _createRectangleColor
+            add esp, 24
+            call _draw
+            xor eax,eax
+
+            ;Dibujar cabeza de nuevo (por bug) (Para que se quede color azul para siguientes draww)
+            push dword 2 ;Color azul
+            push dword 17 ;Ancho
+            push dword 17 ;Altura
+            mov eax,[snake_head]
+            push dword [vec_y+eax] ;Posicion en y
+            push dword [vec_x+eax] ;Posicion en x
+            push dword 0 ;Indice   ;ARREGLAR
+            call _createRectangleColor
+            add esp, 24
+            call _draw
+jmp continue2
             ;agregar nuevo bloque en snake_size*4
             ;0)
             mov eax, 4
@@ -1140,11 +1218,6 @@ two:
             inc eax
             mov [snake_size], eax
 
-
-
-
-
-
             call _draw
 
             ret
@@ -1163,6 +1236,87 @@ two:
 
             ret
 
-                
 
 
+    terminal_cruda:
+        ;Terminal en crudo
+        mov eax, 0x36
+        mov ebx, 0
+        mov ecx, 0x5401
+        mov edx, termios
+        int 0x80
+
+        mov al, byte [c_lflag]
+        mov byte [rflag], al
+
+        and byte [c_lflag], 0xFD
+        and byte [c_lflag], 0xF7
+
+        mov eax, 0x36
+        mov ebx, 0
+        mov ecx, 0x5402
+        mov edx, termios
+        int 0x80
+
+        ret
+
+
+    limpiar_vec:
+        ;************* Limpiar vector en c
+            push dword 4 ;Color azul
+            push dword 0 ;Ancho
+            push dword 0 ;Altura
+            push dword 0 ;Posicion en y
+            push dword 0 ;Posicion en x
+            push dword 0 ;Indice   ;ARREGLAR
+            call _createRectangleColor
+            add esp, 24
+            push dword 4 ;Color azul
+            push dword 0 ;Ancho
+            push dword 0 ;Altura
+            push dword 0 ;Posicion en y
+            push dword 0 ;Posicion en x
+            push dword 1 ;Indice   ;ARREGLAR
+            call _createRectangleColor
+            add esp, 24
+            push dword 4 ;Color azul
+            push dword 0 ;Ancho
+            push dword 0 ;Altura
+            push dword 0 ;Posicion en y
+            push dword 0 ;Posicion en x
+            push dword 2 ;Indice   ;ARREGLAR
+            call _createRectangleColor
+            add esp, 24push dword 4 ;Color azul
+            push dword 0 ;Ancho
+            push dword 0 ;Altura
+            push dword 0 ;Posicion en y
+            push dword 0 ;Posicion en x
+            push dword 3 ;Indice   ;ARREGLAR
+            call _createRectangleColor
+            add esp, 24
+            push dword 4 ;Color azul
+            push dword 0 ;Ancho
+            push dword 0 ;Altura
+            push dword 0 ;Posicion en y
+            push dword 0 ;Posicion en x
+            push dword 4 ;Indice   ;ARREGLAR
+            call _createRectangleColor
+            add esp, 24
+            push dword 4 ;Color azul
+            push dword 0 ;Ancho
+            push dword 0 ;Altura
+            push dword 0 ;Posicion en y
+            push dword 0 ;Posicion en x
+            push dword 5 ;Indice   ;ARREGLAR
+            call _createRectangleColor
+            add esp, 24
+            push dword 4 ;Color azul
+            push dword 0 ;Ancho
+            push dword 0 ;Altura
+            push dword 0 ;Posicion en y
+            push dword 0 ;Posicion en x
+            push dword 6 ;Indice   ;ARREGLAR
+            call _createRectangleColor
+            add esp, 24
+            ret
+            ;************* -------------------
