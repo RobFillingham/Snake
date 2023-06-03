@@ -14,11 +14,11 @@ GLOBAL main
 ;./xGraph
 
 section .data
-    snake_head dd 4             ;Posicion de la cabeza (Segunda posiscion en el vector)
+    snake_head dd 12             ;Posicion de la cabeza (Segunda posiscion en el vector)
     snake_tail dd 0
-    vec_x dd 300,317,0,0,0,0,0  ;Posicion de snake en x
-    vec_y dd 300,300,0,0,0,0,0  ;Poiscion de snake en y
-    snake_size dd 2             ;Longitud snake
+    vec_x dd 300,317,334,351,0,0,0,0,0,0  ;Posicion de snake en x
+    vec_y dd 300,300,300,300,0,0,0,0,0,0  ;Poiscion de snake en y
+    snake_size dd 4             ;Longitud snake
     direccion db 1              ; 0 - Arriba
                                 ; 1 - Derecha
                                 ; 2 - Abajo
@@ -27,7 +27,13 @@ section .data
     food_index dd 0 ;Aumentar cada que se coma
     vecFood_x dw 120,450,50 ,350,27 ,434 ;Posicion de comida en x
     vecFood_y dw 245,70 ,434,245,30 ,434 ;Posicion de comida en y
+    counter dd 0
 
+    tail_backup_x dd 0
+    tail_backup_y dd 0
+
+    x dd 0
+    y dd 0
     
 
 
@@ -45,7 +51,7 @@ section .text
         
         call print_wall ;Pinta un rectangulo
         call print_food
-        call print_snake ;Pintar la serpiente 
+        ;call print_snake ;Pintar la serpiente 
 
         ; Para ver lo suficiente
         push dword 999999
@@ -60,56 +66,106 @@ section .text
         push dword 999999
         call _sleep
         add esp, 4
+        call moverDerecha
+        push dword 999999
+        call _sleep
+        add esp, 4
+        call moverDerecha
+        push dword 999999
+        call _sleep
+        add esp, 4
+        call moverDerecha
+        push dword 999999
+        call _sleep
+        add esp, 4
+
+        call eaten
+
+        a:
+
         call moverArriba
         push dword 999999
         call _sleep
+        add esp, 4
+
+        b:
+
+        call moverArriba
+        push dword 999999
+        call _sleep
+        one1:
         add esp, 4
         call moverArriba
         push dword 999999
         call _sleep
         add esp, 4
+
+        call eaten
+
+        two2:
         call moverArriba
         push dword 999999
         call _sleep
         add esp, 4
+        three3:
         call moverArriba
         push dword 999999
         call _sleep
         add esp, 4
-        call moverArriba
-        push dword 999999
-        call _sleep
-        one:
-        add esp, 4
+        four4:
         call moverIzquierda
-        push dword 1
+        push dword 999999
         call _sleep
         add esp, 4
-        two:
+        five5:
         call moverIzquierda
         push dword 999999
         call _sleep
         add esp, 4
-        three:
+        six6:
         call moverIzquierda
         push dword 999999
         call _sleep
         add esp, 4
-        four:
+
+        call eaten
+
+        call moverIzquierda
+        push dword 999999
+        call _sleep
+        add esp, 4
+
+        call moverIzquierda
+        push dword 999999
+        call _sleep
+        add esp, 4
+
+        call eaten
+
+        call moverIzquierda
+        push dword 999999
+        call _sleep
+        add esp, 4
+
+        call moverIzquierda
+        push dword 999999
+        call _sleep
+        add esp, 4
+
+        call eaten
+
+
         call moverAbajo
         push dword 999999
         call _sleep
         add esp, 4
-        five:
+
         call moverAbajo
         push dword 999999
         call _sleep
         add esp, 4
-        six:
-        call moverAbajo
-        push dword 999999
-        call _sleep
-        add esp, 4
+
+        call eaten
 
         ; ********
         
@@ -549,14 +605,16 @@ section .text
         add esp, 16
   
         ;mover tail
-
+one:
         push dword 2;Color azul
         push dword 17 ;Ancho
         push dword 17 ;Altura
         mov esi, [snake_head]
         mov eax, vec_y[esi] ; eax = vec_y[snake_head]
         mov esi, [snake_tail]
-        mov vec_y[esi], eax
+        mov ebx, vec_y[esi]
+        mov [tail_backup_y], ebx ;hacer backup de y
+        mov vec_y[esi], eax ;asiganrle su nuevo valor en y
         push eax; posicion en y   
         ;determinar x_future
         mov esi, [snake_head]
@@ -564,6 +622,8 @@ section .text
         mov eax, vec_x[esi]
         add eax, 17
         mov esi, [snake_tail]
+        mov ebx, vec_x[esi]
+        mov [tail_backup_x], ebx;hacer backup de la posicion en x
         mov vec_x[esi], eax ;actualizar x de la tail
         push dword eax ;Posicion en x
         push dword [snake_tail]; index
@@ -614,7 +674,7 @@ moverIzquierda:
         push dword 17 ;Altura
         mov esi, [snake_tail]
         xor eax, eax
-        mov eax, vec_y[esi] ;Posicion en y  ;INDEXAR LOS VECTORES NO SE ESTA REALIZANDO CORRECTAMENTE
+        mov eax, vec_y[esi] ;Posicion en y  
         push dword eax
         mov eax, 0
         mov eax, [vec_x+esi] ;Posicion en x
@@ -623,13 +683,14 @@ moverIzquierda:
         add esp, 16
 
         ;mover tail
-
+two:
         push dword 2;Color azul
         push dword 17 ;Ancho
         push dword 17 ;Altura
         mov esi, [snake_head]
         mov eax, vec_y[esi] ; eax = vec_y[snake_head]
         mov esi, [snake_tail]
+        mov ebx, vec_y[esi];backup de tail en y
         mov vec_y[esi], eax
         push eax; posicion en y   
         ;determinar x_future
@@ -638,6 +699,8 @@ moverIzquierda:
         mov eax, vec_x[esi]
         sub eax, 17
         mov esi, [snake_tail]
+        mov ebx, vec_x[esi]
+        mov [tail_backup_x], ebx
         mov vec_x[esi], eax ;actualizar x de la tail
         push dword eax ;Posicion en x
         push dword [snake_tail]; index
@@ -694,7 +757,7 @@ moverIzquierda:
         push dword eax
         call _drawBlack
         add esp, 16
-    
+    three:
         ;mover tail
         ;determinar y future
         push dword 2;Color azul
@@ -704,6 +767,8 @@ moverIzquierda:
         mov eax, vec_y[esi] ; eax = vec_y[snake_head]
         sub eax, 17
         mov esi, [snake_tail]
+        mov ebx, vec_y[esi]
+        mov [tail_backup_y], ebx ;backup en y
         mov vec_y[esi], eax
         push eax; posicion en y   
         ;determinar x_future
@@ -711,6 +776,8 @@ moverIzquierda:
         mov eax, 0
         mov eax, vec_x[esi]
         mov esi, [snake_tail]
+        mov ebx, vec_x[esi]
+        mov [tail_backup_x], ebx ;backup en x
         mov vec_x[esi], eax ;actualizar x de la tail
         push dword eax ;Posicion en x
         push dword [snake_tail]; index
@@ -767,7 +834,7 @@ moverIzquierda:
         push dword eax
         call _drawBlack
         add esp, 16
-    
+    four:
         ;mover tail
         ;determinar y future
         push dword 2;Color azul
@@ -777,6 +844,8 @@ moverIzquierda:
         mov eax, vec_y[esi] ; eax = vec_y[snake_head]
         add eax, 17
         mov esi, [snake_tail]
+        mov ebx, vec_y[esi]
+        mov [tail_backup_y], ebx
         mov vec_y[esi], eax
         push eax; posicion en y   
         ;determinar x_future
@@ -784,6 +853,8 @@ moverIzquierda:
         mov eax, 0
         mov eax, vec_x[esi]
         mov esi, [snake_tail]
+        mov ebx, vec_x[esi]
+        mov [tail_backup_x], ebx
         mov vec_x[esi], eax ;actualizar x de la tail
         push dword eax ;Posicion en x
         push dword [snake_tail]; index
@@ -994,43 +1065,85 @@ moverIzquierda:
 
         eaten: ;cuando la serpiente come
 
-            mov eax, [snake_size] ;Incrementar la variable que indica el tamaño de la snake
-            inc eax
-            mov [snake_size], eax
-
-            ;evaluar si su tamaño es 10
+            ;verificar si se acabo el juego
+            
+            mov eax, [snake_size]
             cmp eax, 10
-            jb increase
             ;call endgame
-            increase:
-                mov ebx, 0
-                mov [snake_tail], ebx ;ajustar la tail al inicio del vector
-                mov ebx, [snake_size] 
-                dec ebx
-                mov eax, 4      ;ajustar la head al final del vector considerando que crecio una casilla
-                mul ebx
-                mov [snake_head], eax
 
-            ;Reajustar los valores de ambos vectores
+            ;agregar nuevo bloque en snake_size*4
+            ;0)
+            mov eax, 4
+            mov ebx, [snake_size]
+            mul ebx  ; eax = snake_size*4
+            sub eax, 4
+            mov esi, eax
+            mov eax, vec_x[esi]  ; eax = vec_x[snake_size-1]
+            mov [x], eax
+            mov ebx, vec_y[esi]  ; ebx = vec_y[snake_size-1]
+            mov [y], ebx
+            
+            
+            mov eax, [snake_size]
+            mov ebx, 4
+            mul ebx
+            mov esi, eax
+            mov eax, [x]
+            mov ebx, [y]
+            mov vec_x[esi], eax
+            mov vec_y[esi], ebx
 
-            mov ecx, [snake_size] 
-            dec ecx
-            mov eax, 300 ;inicializar los casillas de vec_x
-            mov ebx, 300 ;inicializar las casillas de vec_y
-            mov esi, 0
-            mov edi, 0
-            vectores:
-                
+
+            ;1)
+
+            mov eax, [snake_size]
+            dec eax
+            mov ebx, 4
+            mul ebx   ;eax = snake:size-1 *4
+            
+            mov ecx, eax
+            cmp ecx, [snake_tail]
+            je pasoTres
+            cmp ecx, [snake_head]  ;this
+            jne pasouno         ;this
+            mov eax, ecx        ;this
+            add eax, 4             ;this
+            mov [snake_head], eax   ;this
+            
+
+            pasouno:
+            mov esi, ecx
+            sub esi, 4
+
+            pasoDos:
+
+                mov eax, vec_x[esi]
+                mov ebx, vec_y[esi]
+
+                mov vec_x[ecx], eax
+                mov vec_y[ecx], ebx
+
+                sub esi, 4
+                sub ecx, 4
+                cmp ecx, [snake_tail]
+                ja pasoDos
+            
+            pasoTres:
+
+                mov esi, [snake_tail]
+                mov eax, [tail_backup_x]
+                mov ebx, [tail_backup_y]
                 mov vec_x[esi], eax
                 mov vec_y[esi], ebx
 
-                call upload
+            mov eax, [snake_size]
+            inc eax
+            mov [snake_size], eax
 
-                add eax, 17
-                add esi, 4
-                inc edi
 
-            loop vectores
+
+
+
 
             call _draw
 
