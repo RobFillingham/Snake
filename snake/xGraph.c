@@ -9,7 +9,8 @@ char _setup();
 void _draw();
 void _drawString();
 void _sleep(int var);
-void _createRectangle(int index, short int x, short int y, short int height, short int width);
+//void _createRectangle(int index, short int x, short int y, short int height, short int width);
+void _createRectangle();
 void _createRectangleColor(int index, short int x, short int y, short int height, short int width, int colorNum);
 void _paintBlack();
 void _drawBlack(int, int, int, int);
@@ -82,7 +83,7 @@ char _setup(char* s){
 
 void _draw(){
         //XClearWindow(disp, ventana);
-        //_drawString();
+        _drawString();
         XFillRectangles (disp, ventana, XDefaultGC (disp, DefaultScreen(disp)),
 		    recArray, size);
 	    XFlush (disp);
@@ -98,15 +99,18 @@ void _drawString(){
     }
 }
 
-void _createRectangle(int index, short int x, short int y, short int height, short int width){
-    recArray[0].x = x;
-    recArray[0].y = y;
-    recArray[0].height = height;
-    recArray[0].width = width;
-    size++;
+void _createRectangle(){
+    for(int i=0;i<SNK_SIZE;i++){
+        recArray[i].x = 0;
+        recArray[i].y = 0;
+        recArray[i].height = 0;
+        recArray[i].width = 0;
+    }
+    
 }
 
 void _createRectangleColor(int index, short int x, short int y, short int height, short int width, int colorNum) {
+    _createRectangle();
     recArray[index].x = x;
     recArray[index].y = y;
     recArray[index].height = height;
@@ -158,7 +162,7 @@ void _paintBlack(){
 
 void _drawBlack(int x, int y, int width, int height){
         //XClearWindow(disp, ventana);
-        //_drawString();
+        _drawString();
         XFillRectangle(disp, ventana, XDefaultGC (disp, DefaultScreen(disp)),
 		x, y, width, height);
 	    XFlush (disp);
