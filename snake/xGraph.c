@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#define SNK_SIZE 40
+#define SNK_SIZE 10
 #define FOOD_SIZE 7
 
 char _setup();

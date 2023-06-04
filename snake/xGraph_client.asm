@@ -93,15 +93,6 @@ section .text
 
         ; Bucle principal del juego
     game_loop:
-        ;PRUEBA
-        xor eax,eax
-        xor ebx,ebx
-        xor ecx,ecx
-        xor edx,edx
-        xor edi,edi
-        xor esi,esi
-        mov byte [key],0
-        call limpiar_vec
         ; Leer la tecla presionada por el jugador
         mov eax, 0x03
         mov edi, 0
@@ -700,7 +691,6 @@ section .text
 moverIzquierda:
 
         ;borrar tail
-    
         call _paintBlack ; pone el color en negro
 
         push dword 17 ;Ancho
@@ -716,7 +706,6 @@ moverIzquierda:
         add esp, 16
 
         ;mover tail
-
         push dword 2;Color azul
         push dword 17 ;Ancho
         push dword 17 ;Altura
@@ -1136,7 +1125,7 @@ moverIzquierda:
             add esp, 24
             call _draw
             xor eax,eax
-
+;call limpiar_vec
             ;Dibujar cabeza de nuevo (por bug) (Para que se quede color azul para siguientes draww)
             push dword 2 ;Color azul
             push dword 17 ;Ancho
@@ -1148,94 +1137,11 @@ moverIzquierda:
             call _createRectangleColor
             add esp, 24
             call _draw
-jmp continue2
-            ;agregar nuevo bloque en snake_size*4
-            ;0)
-            mov eax, 4
-            mov ebx, [snake_size]
-            mul ebx  ; eax = snake_size*4
-            sub eax, 4
-            mov esi, eax
-            mov eax, vec_x[esi]  ; eax = vec_x[snake_size-1]
-            mov [x], eax
-            mov ebx, vec_y[esi]  ; ebx = vec_y[snake_size-1]
-            mov [y], ebx
+jmp wall
             
             
-            mov eax, [snake_size]
-            mov ebx, 4
-            mul ebx
-            mov esi, eax
-            mov eax, [x]
-            mov ebx, [y]
-            mov vec_x[esi], eax
-            mov vec_y[esi], ebx
-
-
-            ;1)
-
-            mov eax, [snake_size]
-            dec eax
-            mov ebx, 4
-            mul ebx   ;eax = snake:size-1 *4
-            
-            mov ecx, eax
-            cmp ecx, [snake_tail]
-            je pasoTres
-            cmp ecx, [snake_head]  ;this
-            jne pasouno         ;this
-            mov eax, ecx        ;this
-            add eax, 4             ;this
-            mov [snake_head], eax   ;this
-            
-
-            pasouno:
-            mov esi, ecx
-            sub esi, 4
-
-            pasoDos:
-
-                mov eax, vec_x[esi]
-                mov ebx, vec_y[esi]
-
-                mov vec_x[ecx], eax
-                mov vec_y[ecx], ebx
-
-                sub esi, 4
-                sub ecx, 4
-                cmp ecx, [snake_tail]
-                ja pasoDos
-            
-            pasoTres:
-
-                mov esi, [snake_tail]
-                mov eax, [tail_backup_x]
-                mov ebx, [tail_backup_y]
-                mov vec_x[esi], eax
-                mov vec_y[esi], ebx
-
-            mov eax, [snake_size]
-            inc eax
-            mov [snake_size], eax
-
-            call _draw
 
             ret
-
-        upload:
-
-            push dword 2 ;Color verde
-            push dword 17 ;Ancho
-            push dword 17 ;Altura
-            push dword vec_y[esi] ;Posicion en y
-            push dword vec_x[esi] ;Posicion en x
-            push dword edi ;Indice
-            call _createRectangleColor
-
-            add esp, 24
-
-            ret
-
 
 
     terminal_cruda:
@@ -1259,64 +1165,3 @@ jmp continue2
         int 0x80
 
         ret
-
-
-    limpiar_vec:
-        ;************* Limpiar vector en c
-            push dword 4 ;Color azul
-            push dword 0 ;Ancho
-            push dword 0 ;Altura
-            push dword 0 ;Posicion en y
-            push dword 0 ;Posicion en x
-            push dword 0 ;Indice   ;ARREGLAR
-            call _createRectangleColor
-            add esp, 24
-            push dword 4 ;Color azul
-            push dword 0 ;Ancho
-            push dword 0 ;Altura
-            push dword 0 ;Posicion en y
-            push dword 0 ;Posicion en x
-            push dword 1 ;Indice   ;ARREGLAR
-            call _createRectangleColor
-            add esp, 24
-            push dword 4 ;Color azul
-            push dword 0 ;Ancho
-            push dword 0 ;Altura
-            push dword 0 ;Posicion en y
-            push dword 0 ;Posicion en x
-            push dword 2 ;Indice   ;ARREGLAR
-            call _createRectangleColor
-            add esp, 24push dword 4 ;Color azul
-            push dword 0 ;Ancho
-            push dword 0 ;Altura
-            push dword 0 ;Posicion en y
-            push dword 0 ;Posicion en x
-            push dword 3 ;Indice   ;ARREGLAR
-            call _createRectangleColor
-            add esp, 24
-            push dword 4 ;Color azul
-            push dword 0 ;Ancho
-            push dword 0 ;Altura
-            push dword 0 ;Posicion en y
-            push dword 0 ;Posicion en x
-            push dword 4 ;Indice   ;ARREGLAR
-            call _createRectangleColor
-            add esp, 24
-            push dword 4 ;Color azul
-            push dword 0 ;Ancho
-            push dword 0 ;Altura
-            push dword 0 ;Posicion en y
-            push dword 0 ;Posicion en x
-            push dword 5 ;Indice   ;ARREGLAR
-            call _createRectangleColor
-            add esp, 24
-            push dword 4 ;Color azul
-            push dword 0 ;Ancho
-            push dword 0 ;Altura
-            push dword 0 ;Posicion en y
-            push dword 0 ;Posicion en x
-            push dword 6 ;Indice   ;ARREGLAR
-            call _createRectangleColor
-            add esp, 24
-            ret
-            ;************* -------------------
