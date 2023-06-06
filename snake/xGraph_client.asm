@@ -828,7 +828,7 @@ moverIzquierda:
             add esp, 4
             jmp ext1
     
-
+        ;e
         eaten:
         ;verificar si se acabo el juego
             mov esi, [snake_size]
