@@ -7,6 +7,7 @@ EXTERN _clearScreen
 EXTERN _clearScreenColor
 EXTERN _paintBlack
 EXTERN _drawBlack
+EXTERN check_key
 GLOBAL main
 
 ;nasm -f elf32 xGraph_client.asm -g -F dwarf 
@@ -86,7 +87,7 @@ section .text
         ;call _sleep
         ;add esp, 4
 
-        call terminal_cruda
+        ;call terminal_cruda
         ;mov byte [key], 100; Cambiar la dirección a derecha
 
         ; Bucle principal del juego
@@ -99,11 +100,9 @@ section .text
             xor esi,esi
             xor edi,edi
             mov byte [key],0
-        mov eax, 0x03
-        mov edi, 0
-        mov ecx, key
-        mov edx, 1
-        int 0x80
+        
+        call check_key
+        mov [key], eax
 
         ; Verificar la tecla presionada y cambiar la dirección del Snake
         cmp byte [key], 0
@@ -197,14 +196,7 @@ section .text
 
 
     ext1:
-        mov al, byte [rflag]
-        mov byte [c_lflag], al
-
-        mov eax, 0x36
-        mov ebx, 0
-        mov ecx, 0x5402
-        mov edx, termios
-        int 0x80
+        
 
         mov eax, 1
         int 0x80
@@ -921,4 +913,3 @@ moverIzquierda:
     endgame:
         ;Poner fondo blanco y logo en negro
         jmp ext1
-
