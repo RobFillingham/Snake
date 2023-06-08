@@ -116,7 +116,7 @@ void _createRectangleColor(int index, short int x, short int y, short int height
     recArray[index].height = height;
     recArray[index].width = width;
     
-    size++;
+    //size++;
 
     switch(colorNum){
         case 1: {  //Se utiliza XParseColor para convertir el nombre de color "red" en una estructura XColor y luego XAllocColor para asignar un píxel a esa estructura. 

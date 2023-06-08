@@ -100,7 +100,7 @@ section .text
             xor esi,esi
             xor edi,edi
             mov byte [key],0
-        
+
         call check_key
         mov [key], eax
 
@@ -188,6 +188,8 @@ section .text
         ;int 0x80
 
         ; Repetir el bucle principal del juego
+        push 4
+        call _sleep
         jmp game_loop
 
         ; ********
@@ -196,8 +198,6 @@ section .text
 
 
     ext1:
-        
-
         mov eax, 1
         int 0x80
 
@@ -823,8 +823,10 @@ moverIzquierda:
         ;e
         eaten:
         ;verificar si se acabo el juego
-            mov esi, [snake_size]
-            cmp esi, 10
+            ;mov esi, [snake_size]
+            ;cmp esi, 10
+            mov esi, [food_index]
+            cmp esi, 16
             je endgame ;Fin del juego
             ;Borrar la comida
             push dword 4  ;Color negro
