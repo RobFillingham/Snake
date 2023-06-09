@@ -9,14 +9,18 @@ char _setup();
 void _draw();
 void _drawString();
 void _sleep(int var);
-void _createRectangle(int index, short int x, short int y, short int height, short int width);
+//void _createRectangle(int index, short int x, short int y, short int height, short int width);
+void _createRectangle();
 void _createRectangleColor(int index, short int x, short int y, short int height, short int width, int colorNum);
+void _paintBlack();
+void _drawBlack(int, int, int, int);
 
 Display* disp;
 
 Window ventana;
 XColor color;
 XRectangle recArray[SNK_SIZE];
+
 
 char stringDraw[] = {'H','o','l','a',' ','M','u','n','d','o','!'};
 char setUpSuccess = 0;
@@ -86,6 +90,7 @@ void _draw(){
         //sleep(1);
 }
 
+
 void _drawString(){
     if (setUpSuccess){
         XDrawImageString (disp, ventana, XDefaultGC (disp, DefaultScreen(disp)), 
@@ -94,21 +99,24 @@ void _drawString(){
     }
 }
 
-void _createRectangle(int index, short int x, short int y, short int height, short int width){
-    recArray[0].x = x;
-    recArray[0].y = y;
-    recArray[0].height = height;
-    recArray[0].width = width;
-    size++;
+void _createRectangle(){
+    for(int i=0;i<SNK_SIZE;i++){
+        recArray[i].x = 0;
+        recArray[i].y = 0;
+        recArray[i].height = 0;
+        recArray[i].width = 0;
+    }
+    
 }
 
 void _createRectangleColor(int index, short int x, short int y, short int height, short int width, int colorNum) {
+    _createRectangle();
     recArray[index].x = x;
     recArray[index].y = y;
     recArray[index].height = height;
     recArray[index].width = width;
     
-    size++;
+    //size++;
 
     switch(colorNum){
         case 1: {  //Se utiliza XParseColor para convertir el nombre de color "red" en una estructura XColor y luego XAllocColor para asignar un píxel a esa estructura. 
@@ -145,6 +153,22 @@ void _createRectangleColor(int index, short int x, short int y, short int height
     
 }
 
+void _paintBlack(){
+    XParseColor(disp, DefaultColormap(disp, DefaultScreen(disp)), "black", &color);
+    XAllocColor(disp, DefaultColormap(disp, DefaultScreen(disp)), &color);
+    XSetForeground(disp, XDefaultGC(disp, DefaultScreen(disp)), color.pixel);
+    
+}
+
+void _drawBlack(int x, int y, int width, int height){
+        //XClearWindow(disp, ventana);
+        _drawString();
+        XFillRectangle(disp, ventana, XDefaultGC (disp, DefaultScreen(disp)),
+		x, y, width, height);
+	    XFlush (disp);
+        //sleep(1);
+}
+
 // Limpiar pantalla
 void _clearScreen() {
     XClearWindow(disp, ventana);
@@ -152,5 +176,5 @@ void _clearScreen() {
 }
 
 void _sleep(int var){
-    sleep(var);
+    usleep(var);
 }
