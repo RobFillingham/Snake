@@ -61,13 +61,16 @@ section .text
     main:
         
         call _setup
+        call printLogo
+        push dword 2999999
+        call _sleep
+        add esp, 4
         call _clearScreen
-        ; Segundos antes de dibujar cuadro
-        ;push dword 999999
-        ;call _sleep
-        ;add esp, 4
+        ;Segundos antes de dibujar cuadro
+      
         
-        
+        call print_wall
+
 ;********************** Primer comida disponible
         push dword 1  ;Color Rojo
         push dword 10 ;Ancho
@@ -200,6 +203,271 @@ section .text
     ext1:
         mov eax, 1
         int 0x80
+
+
+    printLogo:
+        push dword 5 ;Color blanco
+        push dword 34 ;Ancho
+        push dword 17 ;Altura
+        push dword 220 ;Posicion en y
+        push dword 150 ;Posicion en x
+        push dword 0 ;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+        push dword 5 ;Color blanco
+        push dword 17 ;Ancho
+        push dword 34 ;Altura
+        push dword 220 ;Posicion en y
+        push dword 150 ;Posicion en x
+        push dword 0 ;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+        push dword 5 ;Color blanco
+        push dword 34 ;Ancho
+        push dword 17 ;Altura
+        push dword 254 ;Posicion en y
+        push dword 150 ;Posicion en x
+        push dword 0 ;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+        push dword 5 ;Color blanco
+        push dword 17 ;Ancho
+        push dword 34 ;Altura
+        push dword 254 ;Posicion en y
+        push dword 167 ;Posicion en x
+        push dword 0 ;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+        push dword 5 ;Color blanco
+        push dword 34 ;Ancho
+        push dword 17 ;Altura
+        push dword 288 ;Posicion en y
+        push dword 150 ;Posicion en x
+        push dword 0;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+;LETRA N
+        push dword 5 ;Color blanco
+        push dword 34 ;Ancho
+        push dword 17 ;Altura
+        push dword 220 ;Posicion en y
+        push dword 190 ;Posicion en x
+        push dword 0 ;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+        push dword 5 ;Color blanco
+        push dword 17 ;Ancho
+        push dword 68 ;Altura
+        push dword 237 ;Posicion en y
+        push dword 190 ;Posicion en x
+        push dword 0 ;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+        push dword 5 ;Color blanco
+        push dword 17 ;Ancho
+        push dword 85 ;Altura
+        push dword 220 ;Posicion en y
+        push dword 215 ;Posicion en x
+        push dword 0 ;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+;LETRA A
+        push dword 5 ;Color blanco
+        push dword 17 ;Ancho
+        push dword 85 ;Altura
+        push dword 220 ;Posicion en y
+        push dword 238 ;Posicion en x
+        push dword 0 ;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+        push dword 5 ;Color blanco
+        push dword 17 ;Ancho
+        push dword 85 ;Altura
+        push dword 220 ;Posicion en y
+        push dword 264 ;Posicion en x
+        push dword 0 ;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+        push dword 5 ;Color blanco
+        push dword 30 ;Ancho
+        push dword 17 ;Altura
+        push dword 220 ;Posicion en y
+        push dword 240 ;Posicion en x
+        push dword 0 ;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+        push dword 5 ;Color blanco
+        push dword 30 ;Ancho
+        push dword 17 ;Altura
+        push dword 255 ;Posicion en y
+        push dword 240 ;Posicion en x
+        push dword 0 ;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+;LETRA K
+        push dword 5 ;Color blanco
+        push dword 17 ;Ancho
+        push dword 85 ;Altura
+        push dword 220 ;Posicion en y
+        push dword 287 ;Posicion en x
+        push dword 0 ;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+        push dword 5 ;Color blanco
+        push dword 17 ;Ancho
+        push dword 17 ;Altura
+        push dword 262 ;Posicion en y
+        push dword 304 ;Posicion en x
+        push dword 0 ;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+        push dword 5 ;Color blanco
+        push dword 17 ;Ancho
+        push dword 26 ;Altura
+        push dword 279 ;Posicion en y
+        push dword 313 ;Posicion en x
+        push dword 0 ;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+        push dword 5 ;Color blanco
+        push dword 17 ;Ancho
+        push dword 26 ;Altura
+        push dword 220 ;Posicion en y
+        push dword 313 ;Posicion en x
+        push dword 0 ;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+        push dword 5 ;Color blanco
+        push dword 17 ;Ancho
+        push dword 17 ;Altura
+        push dword 245 ;Posicion en y
+        push dword 304 ;Posicion en x
+        push dword 0 ;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+;LETRA E
+        push dword 5 ;Color blanco
+        push dword 17 ;Ancho
+        push dword 85 ;Altura
+        push dword 220 ;Posicion en y
+        push dword 336 ;Posicion en x
+        push dword 0 ;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+        push dword 5 ;Color blanco
+        push dword 28 ;Ancho
+        push dword 17 ;Altura
+        push dword 220 ;Posicion en y
+        push dword 336 ;Posicion en x
+        push dword 0 ;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+        push dword 5 ;Color blanco
+        push dword 28 ;Ancho
+        push dword 17 ;Altura
+        push dword 253 ;Posicion en y
+        push dword 336 ;Posicion en x
+        push dword 0 ;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+         push dword 5 ;Color blanco
+        push dword 28 ;Ancho
+        push dword 17 ;Altura
+        push dword 288 ;Posicion en y
+        push dword 336 ;Posicion en x
+        push dword 0 ;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+        push dword 5 ;Color blanco
+        push dword 250 ;Ancho
+        push dword 5 ;Altura
+        push dword 200 ;Posicion en y
+        push dword 132 ;Posicion en x
+        push dword 0 ;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+        push dword 5 ;Color blanco
+        push dword 250 ;Ancho
+        push dword 5 ;Altura
+        push dword 320 ;Posicion en y
+        push dword 132 ;Posicion en x
+        push dword 0 ;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+        push dword 3
+        call _sleep
+        add esp, 4
+        ret
+
+     print_wall:
+        
+        push dword 3 ;Color verde
+        push dword 25 ;Ancho
+        push dword 500 ;Altura
+        push dword 0 ;Posicion en y
+        push dword 0 ;Posicion en x
+        push dword 0 ;Indice
+        call _createRectangleColor
+        
+        add esp, 24
+        
+        call _draw
+        push dword 3 ;Color verde
+        push dword 500 ;Ancho
+        push dword 25 ;Altura
+        push dword 0 ;Posicion en y
+        push dword 0 ;Posicion en x
+        push dword 0 ;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+        push dword 3 ;Color verde
+        push dword 500 ;Anchols
+        push dword 25 ;Altura
+        push dword 475 ;Posicion en y
+        push dword 0 ;Posicion en x
+        push dword 0;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+        push dword 3 ;Color verde
+        push dword 25 ;Ancho
+        push dword 500 ;Altura
+        push dword 0 ;Posicion en y
+        push dword 475 ;Posicion en x
+        push dword 0;Indice
+        call _createRectangleColor
+        add esp, 24
+        call _draw
+        push dword 2
+        call _sleep
+        add esp, 4
+        
+        ret
+
 
 
     print_snake:
