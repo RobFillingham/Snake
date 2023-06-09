@@ -45,6 +45,8 @@ section .data
     msg db "q"
     msg2 db "o"
 
+    speed dd 250000  ;velocidad de la snake
+
 
 section .bss
     key resb 1
@@ -62,7 +64,7 @@ section .text
         
         call _setup
         call printLogo
-        push dword 2999999
+        push dword 200000
         call _sleep
         add esp, 4
         call _clearScreen
@@ -85,7 +87,7 @@ section .text
 
         call print_snake ;Pintar la serpiente 
 
-        ; Para ver lo suficiente
+        ;Para ver lo suficiente
         ;push dword 999999
         ;call _sleep
         ;add esp, 4
@@ -125,7 +127,15 @@ section .text
 
     no_key_pressed:
         ; Sin tecla presionada, continuar con la dirección actual del Snake
+        mov eax, [speed]
+        push eax
+        call _sleep
+        add esp, 4
+
+        jmp move_snake
         jmp game_loop
+       
+
 
     arrow_up:
         cmp byte [direction], 3 ; Si la dirección actual es abajo, no permitir el movimiento hacia arriba
@@ -1096,6 +1106,15 @@ moverIzquierda:
             mov esi, [food_index]
             cmp esi, 16
             je endgame ;Fin del juego
+
+            
+
+            ;Incrementar velocidad
+            mov eax, [speed]
+            sub eax, 50000
+            mov [speed], eax
+            mov eax, 0
+
             ;Borrar la comida
             push dword 4  ;Color negro
             push dword 10 ;Ancho
